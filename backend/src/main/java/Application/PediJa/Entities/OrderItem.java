@@ -2,6 +2,8 @@ package Application.PediJa.Entities;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Application.PediJa.Entities.PK.OrderItemPK;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -18,6 +20,7 @@ public class OrderItem {
   @EmbeddedId
   private OrderItemPK id;
 
+  @JsonIgnore
   @ManyToOne
   @MapsId("pedidoId")
   @JoinColumn(name = "pedido_id")
@@ -32,6 +35,8 @@ public class OrderItem {
 
   @Column(name = "preco_unitario")
   private BigDecimal precoUnitario;
+
+  public OrderItem(){}
 
   public OrderItemPK getId() {
     return id;

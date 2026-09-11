@@ -100,14 +100,25 @@ public class Order {
     this.paymentMethod = paymentMethod;
   }
 
-  public BigDecimal getTotal() {
-    BigDecimal sum = BigDecimal.ZERO;
-    for (OrderItem x : items) {
-      sum = sum.add(x.getPrecoUnitario().multiply(BigDecimal.valueOf(x.getQuantidade())));
-    }
-    return sum;
+  public BigDecimal getValorTotal() {
+    return valorTotal;
   }
-  public void setTotal(BigDecimal total) {
-    this.valorTotal = total;
+
+  public void setTotal(BigDecimal valorTotal) {
+    this.valorTotal = valorTotal;
+  }
+
+  public void removerItem(OrderItem item) {
+    items.remove(item);
+    item.setPedido(this);
+  }
+
+  public void addItem(OrderItem item) {
+    items.add(item);
+    item.setPedido(null);
+  }
+
+  public List<OrderItem> getItems() {
+    return items;
   }
 }
