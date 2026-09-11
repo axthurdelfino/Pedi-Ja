@@ -1,0 +1,75 @@
+package Application.PediJa.Entities;
+
+import java.math.BigDecimal;
+
+import Application.PediJa.Entities.PK.OrderItemPK;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "item_pedido")
+public class OrderItem {
+
+  @EmbeddedId
+  private OrderItemPK id;
+
+  @ManyToOne
+  @MapsId("pedidoId")
+  @JoinColumn(name = "pedido_id")
+  private Order pedido;
+
+  @ManyToOne
+  @MapsId("produtoId")
+  @JoinColumn(name = "produto_id")
+  private Product produto;
+
+  private Integer quantidade;
+
+  @Column(name = "preco_unitario")
+  private BigDecimal precoUnitario;
+
+  public OrderItemPK getId() {
+    return id;
+  }
+
+  public void setId(OrderItemPK id) {
+    this.id = id;
+  }
+
+  public Order getPedido() {
+    return pedido;
+  }
+
+  public void setPedido(Order pedido) {
+    this.pedido = pedido;
+  }
+
+  public Product getProduto() {
+    return produto;
+  }
+
+  public void setProduto(Product produto) {
+    this.produto = produto;
+  }
+
+  public Integer getQuantidade() {
+    return quantidade;
+  }
+
+  public void setQuantidade(Integer quantidade) {
+    this.quantidade = quantidade;
+  }
+
+  public BigDecimal getPrecoUnitario() {
+    return precoUnitario;
+  }
+
+  public void setPrecoUnitario(BigDecimal precoUnitario) {
+    this.precoUnitario = precoUnitario;
+  }
+}

@@ -2,6 +2,8 @@ package Application.PediJa.Entities;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import Application.PediJa.Entities.Enums.OrderStatus;
 import Application.PediJa.Entities.Enums.PaymentMethod;
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -41,6 +44,9 @@ public class Order {
 
   @Column(name = "valor_total")
   private BigDecimal valorTotal;
+
+  @OneToMany(mappedBy = "pedido")
+  List<OrderItem> items = new ArrayList<>();
 
   public Order(){}
 
@@ -95,9 +101,12 @@ public class Order {
   }
 
   public BigDecimal getTotal() {
-    return valorTotal;
+    BigDecimal sum = BigDecimal.ZERO;
+    for (OrderItem x : items) {
+      sum = sum.add(x.getPrecoUnitario().multiply(BigDecimal.valueOf(x.getQuantidade())));
+    }
+    return sum;
   }
-
   public void setTotal(BigDecimal total) {
     this.valorTotal = total;
   }
