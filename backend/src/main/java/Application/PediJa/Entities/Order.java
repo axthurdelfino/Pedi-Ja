@@ -1,12 +1,13 @@
 package Application.PediJa.Entities;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import Application.PediJa.Entities.Enums.OrderStatus;
 import Application.PediJa.Entities.Enums.PaymentMethod;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +33,7 @@ public class Order {
   private Client client;
 
   @Column(name = "data_pedido")
-  private Instant dataPedido;
+  private LocalDateTime dataPedido;
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
@@ -45,12 +46,12 @@ public class Order {
   @Column(name = "valor_total")
   private BigDecimal valorTotal;
 
-  @OneToMany(mappedBy = "pedido")
-  List<OrderItem> items = new ArrayList<>();
+  @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderItem> items = new ArrayList<>();
 
   public Order(){}
 
-  public Order(Long id, Client client, Instant dataPedido, OrderStatus orderStatus, PaymentMethod paymentMethod,
+  public Order(Long id, Client client, LocalDateTime dataPedido, OrderStatus orderStatus, PaymentMethod paymentMethod,
       BigDecimal total) {
     this.id = id;
     this.client = client;
@@ -76,11 +77,11 @@ public class Order {
     this.client = client;
   }
 
-  public Instant getDataPedido() {
+  public LocalDateTime getDataPedido() {
     return dataPedido;
   }
 
-  public void setDataPedido(Instant dataPedido) {
+  public void setDataPedido(LocalDateTime dataPedido) {
     this.dataPedido = dataPedido;
   }
 
@@ -104,18 +105,18 @@ public class Order {
     return valorTotal;
   }
 
-  public void setTotal(BigDecimal valorTotal) {
+  public void setValorTotal(BigDecimal valorTotal) {
     this.valorTotal = valorTotal;
   }
 
   public void removerItem(OrderItem item) {
     items.remove(item);
-    item.setPedido(this);
+    item.setPedido(null);
   }
 
   public void addItem(OrderItem item) {
     items.add(item);
-    item.setPedido(null);
+    item.setPedido(this);
   }
 
   public List<OrderItem> getItems() {

@@ -1,0 +1,104 @@
+PediJa - Contexto do projeto
+============================
+
+Objetivo
+--------
+Sistema web de gerenciamento de pedidos para a empresa MF Torres, com cadastro e consulta de clientes, produtos, usuários e pedidos.
+
+Documentos de referência
+------------------------
+- /home/arthur/Downloads/planejamento_implementacao_pedja.pdf
+- /home/arthur/Downloads/Modelo Curricularização Inicial (1).docx
+
+Modo de trabalho combinado
+--------------------------
+- Arthur implementa o backend por etapas.
+- O assistente revisa a implementação contra o planejamento e os requisitos levantados.
+- O assistente não deve codar o backend sem solicitação explícita.
+- O frontend poderá ser implementado pelo assistente quando essa etapa chegar, conforme combinado.
+- Ao revisar, verificar arquitetura, requisitos, segurança, validações, testes, bugs e integração.
+
+Local principal
+---------------
+/home/arthur/Downloads/PediJa/backend
+
+Tecnologias planejadas
+----------------------
+- Java 21
+- Spring Boot
+- Spring Web MVC
+- Spring Data JPA / Hibernate
+- PostgreSQL
+- Flyway
+- Bean Validation
+- Spring Security + JWT
+- JUnit + Mockito
+- Frontend futuro em React + TypeScript
+
+Estado atual
+------------
+- Projeto Maven criado e compilando.
+- Package principal: Application.PediJa
+- Entidades criadas em src/main/java/Application/PediJa/Entities.
+- Enums atuais: OrderStatus e PaymentMethod.
+- Chave composta criada em Entities/PK/OrderItemPK.java.
+- Migration atual: src/main/resources/db/migration/V1__initial_schema.sql.
+- A migration V1 cria todas as tabelas de uma vez: usuario, cliente, produto, pedido e item_pedido.
+- Isso difere do planejamento, que previa migrations V1 a V5 separadas. Manter essa diferença registrada para decisão posterior.
+- Timestamps das entidades usam LocalDateTime, compatível conceitualmente com TIMESTAMP da migration.
+- Última validação: mvn test -DskipTests executado com BUILD SUCCESS.
+
+Entidades e tabelas
+-------------------
+- User -> usuario
+  - id, login, password mapeado para senha, dataCriacao mapeado para data_criacao.
+- Client -> cliente
+  - id, nome, cpf, telefone, email, endereco, dataCadastro mapeado para data_cadastro.
+  - possui lista de Order com mappedBy = client.
+- Product -> produto
+  - id, nome, descricao, preco, estoque.
+- Order -> pedido
+  - id, client, dataPedido, orderStatus mapeado para status, paymentMethod mapeado para forma_pagamento, valorTotal e items.
+  - relacionamento ManyToOne com Client.
+  - relacionamento OneToMany com OrderItem.
+- OrderItem -> item_pedido
+  - id composto, pedido, produto, quantidade e precoUnitario mapeado para preco_unitario.
+  - usa EmbeddedId e MapsId.
+- OrderItemPK
+  - pedidoId mapeado para pedido_id.
+  - produtoId mapeado para produto_id.
+
+Enums definidos
+---------------
+- OrderStatus: PENDENTE, PAGO, ENVIADO, CANCELADO.
+- PaymentMethod: PIX, CARTAO, DINHEIRO.
+- Role ainda precisa ser criado. A tabela usuario também precisará de uma decisão/migration para armazenar a role.
+
+Próximas revisões prioritárias
+------------------------------
+1. Verificar se OrderItemPK possui construtor, getters e setters suficientes para o service.
+2. Confirmar se o construtor de OrderItem inicializa OrderItemPK quando necessário.
+3. Definir cascade e orphanRemoval em Order.items.
+4. Confirmar nullable = false e precision/scale nos campos compatíveis com a migration.
+5. Definir valores iniciais de data, status e valorTotal, preferencialmente no domínio/@PrePersist ou no service.
+6. Criar repositories.
+7. Criar DTOs de request/response e validações.
+8. Implementar CRUD de Product e Client.
+9. Implementar criação de pedidos com itens, consolidação do mesmo produto, cópia do preço atual e cálculo do total no backend.
+10. Implementar filtros e alteração de status.
+11. Implementar autenticação, Spring Security, JWT e Role.
+12. Criar tratamento padronizado de exceções.
+13. Criar testes unitários e de integração conforme necessário.
+14. Implementar/revisar o frontend React + TypeScript.
+
+Regras essenciais
+-----------------
+- BigDecimal para dinheiro.
+- O preço unitário do item deve ser copiado do produto no momento da venda.
+- O valor total deve ser calculado no backend.
+- Entidades não devem ser expostas diretamente como contrato da API; usar DTOs.
+- Bean Validation cuida de formato/estrutura; Service cuida das regras de negócio.
+- Senhas nunca devem ser armazenadas em texto puro.
+- A chave de item_pedido é (pedido_id, produto_id); o mesmo produto deve ser consolidado no pedido.
+- Recursos inexistentes devem gerar ResourceNotFoundException.
+- Regras inválidas devem gerar BusinessException.

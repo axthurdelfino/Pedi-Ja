@@ -36,7 +36,18 @@ public class OrderItem {
   @Column(name = "preco_unitario")
   private BigDecimal precoUnitario;
 
-  public OrderItem(){}
+  public OrderItem() {
+  }
+
+
+  public OrderItem(OrderItemPK id, Order pedido, Product produto, Integer quantidade, BigDecimal precoUnitario) {
+    this.id = new OrderItemPK();
+    this.pedido = pedido;
+    this.produto = produto;
+    this.quantidade = quantidade;
+    this.precoUnitario = precoUnitario;
+  }
+
 
   public OrderItemPK getId() {
     return id;

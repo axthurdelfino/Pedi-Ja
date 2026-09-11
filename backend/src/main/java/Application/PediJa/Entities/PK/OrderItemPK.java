@@ -2,6 +2,7 @@ package Application.PediJa.Entities.PK;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
@@ -9,8 +10,33 @@ public class OrderItemPK implements Serializable{
 
   private static final long serialVersionUID = 1L;
 
+    @Column(name = "pedido_id", nullable = false)
     private Long pedidoId;
+    @Column(name = "produto_id", nullable = false)
     private Long produtoId;
+
+    public OrderItemPK(){}
+
+    public OrderItemPK(Long pedidoId, Long produtoId) {
+      this.pedidoId = pedidoId;
+      this.produtoId = produtoId;
+    }
+
+    public Long getPedidoId() {
+      return pedidoId;
+    }
+
+    public void setPedidoId(Long pedidoId) {
+      this.pedidoId = pedidoId;
+    }
+
+    public Long getProdutoId() {
+      return produtoId;
+    }
+
+    public void setProdutoId(Long produtoId) {
+      this.produtoId = produtoId;
+    }
 
     @Override
     public int hashCode() {

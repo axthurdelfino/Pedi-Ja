@@ -1,6 +1,6 @@
 package Application.PediJa.Entities;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "cliente")
@@ -29,13 +28,13 @@ public class Client {
 
   private String telefone;
 
-  @Email
+
   private String email;
 
   private String endereco;
 
   @Column(name = "data_cadastro")
-  private Instant dataCadastro;
+  private LocalDateTime dataCadastro;
 
   @JsonIgnore
   @OneToMany(mappedBy = "client")
@@ -43,7 +42,7 @@ public class Client {
 
   public Client(){}
 
-  public Client(Long id, String nome, String cpf, String telefone, String email, String endereco, Instant dataCadastro) {
+  public Client(Long id, String nome, String cpf, String telefone, String email, String endereco, LocalDateTime dataCadastro) {
     this.id = id;
     this.nome = nome;
     this.cpf = cpf;
@@ -101,11 +100,11 @@ public class Client {
     this.endereco = endereco;
   }
 
-  public Instant getDataCadastro() {
+  public LocalDateTime getDataCadastro() {
     return dataCadastro;
   }
 
-  public void setDataCadastro(Instant dataCadastro) {
+  public void setDataCadastro(LocalDateTime dataCadastro) {
     this.dataCadastro = dataCadastro;
   }
 }
