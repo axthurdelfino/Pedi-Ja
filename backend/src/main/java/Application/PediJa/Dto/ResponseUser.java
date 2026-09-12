@@ -21,10 +21,10 @@ public class ResponseUser {
     this.login = login;
   }
   public LocalDateTime getData_criacao() {
-    return data_criacao;
+    return dataCriacao;
   }
-  public void setData_criacao(LocalDateTime data_criacao) {
-    this.data_criacao = data_criacao;
+  public void setData_criacao(LocalDateTime dataCriacao) {
+    this.dataCriacao = dataCriacao;
   }
   @Override
   public int hashCode() {
