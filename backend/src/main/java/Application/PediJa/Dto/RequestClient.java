@@ -34,11 +34,11 @@ public class RequestClient {
     this.nome = nome;
   }
 
-  public String getCPF() {
+  public String getCpf() {
     return cpf;
   }
 
-  public void setCPF(String cpf) {
+  public void setCpf(String cpf) {
     this.cpf = cpf;
   }
 

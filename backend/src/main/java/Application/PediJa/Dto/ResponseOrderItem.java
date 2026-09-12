@@ -8,7 +8,7 @@ public class ResponseOrderItem {
   private String produtoNome;
   private Integer quantidade;
   private BigDecimal precoUnitario;
-  private BigDecimal subTotal;
+  private BigDecimal subtotal;
 
   public Long getProdutoId() {
     return produtoId;
@@ -36,10 +36,10 @@ public class ResponseOrderItem {
     this.precoUnitario = precoUnitario;
   }
   public BigDecimal getSubTotal() {
-    return subTotal;
+    return subtotal;
   }
-  public void setSubTotal(BigDecimal subTotal) {
-    this.subTotal = subTotal;
+  public void setSubTotal(BigDecimal subtotal) {
+    this.subtotal = subtotal;
   }
   @Override
   public int hashCode() {

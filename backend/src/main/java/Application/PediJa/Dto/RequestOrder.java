@@ -38,4 +38,8 @@ public class RequestOrder {
   public List<RequestOrderItem> getItems() {
     return items;
   }
+
+  public void setItems(List<RequestOrderItem> items) {
+    this.items = items;
+  }
 }

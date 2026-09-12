@@ -22,7 +22,7 @@ public class RequestProduct {
   @Positive
   private BigDecimal preco;
 
-  @NotBlank
+  @NotNull
   @PositiveOrZero
   private Integer estoque;
 
