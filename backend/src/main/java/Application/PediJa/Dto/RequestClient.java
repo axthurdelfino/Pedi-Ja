@@ -39,7 +39,7 @@ public class RequestClient {
   }
 
   public void setCPF(String cpf) {
-    cpf = cpf;
+    this.cpf = cpf;
   }
 
   public String getTelefone() {

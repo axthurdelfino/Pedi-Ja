@@ -1,16 +1,14 @@
 package Application.PediJa.Dto;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
-public class ResponseClient {
+public class ResponseProduct {
 
   private Long id;
   private String nome;
-  private String cpf;
-  private String telefone;
-  private String endereco;
-  private String email;
-  private LocalDateTime dataCadastro;
+  private String descricao;
+  private BigDecimal preco;
+  private Integer estoque;
 
   public Long getId() {
     return id;
@@ -24,30 +22,24 @@ public class ResponseClient {
   public void setNome(String nome) {
     this.nome = nome;
   }
-  public String getCpf() {
-    return cpf;
+  public String getDescricao() {
+    return descricao;
   }
-  public void setCpf(String cpf) {
-    this.cpf = cpf;
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
   }
-  public String getTelefone() {
-    return telefone;
+  public BigDecimal getPreco() {
+    return preco;
   }
-  public void setTelefone(String telefone) {
-    this.telefone = telefone;
+  public void setPreco(BigDecimal preco) {
+    this.preco = preco;
   }
-  public String getEndereco() {
-    return endereco;
-  }
-  public void setEndereco(String endereco) {
-    this.endereco = endereco;
-  }
-  public LocalDateTime getDataCadastro() {
-    return dataCadastro;
+  public Integer getEstoque() {
+    return estoque;
   }
 
-  public void setDataCadastro(LocalDateTime dataCadastro) {
-    this.dataCadastro = dataCadastro;
+  public void setEstoque(Integer estoque) {
+    this.estoque = estoque;
   }
 
   @Override
@@ -65,7 +57,7 @@ public class ResponseClient {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    ResponseClient other = (ResponseClient) obj;
+    ResponseProduct other = (ResponseProduct) obj;
     if (id == null) {
       if (other.id != null)
         return false;
@@ -73,4 +65,5 @@ public class ResponseClient {
       return false;
     return true;
   }
+
 }

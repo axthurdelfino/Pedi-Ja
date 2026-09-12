@@ -20,10 +20,10 @@ public class ResponseUser {
   public void setLogin(String login) {
     this.login = login;
   }
-  public LocalDateTime getData_criacao() {
+  public LocalDateTime getDataCriacao() {
     return dataCriacao;
   }
-  public void setData_criacao(LocalDateTime dataCriacao) {
+  public void setDataCriacao(LocalDateTime dataCriacao) {
     this.dataCriacao = dataCriacao;
   }
   @Override
