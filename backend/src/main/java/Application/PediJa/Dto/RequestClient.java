@@ -11,7 +11,7 @@ public class RequestClient {
   private String nome;
 
   @NotBlank
-  @Size(min = 11, max = 11)
+  @Size(min = 11, max = 14)
   private String cpf;
 
   @NotBlank
