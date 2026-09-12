@@ -20,7 +20,7 @@ public class ResponseOrderItem {
   public String getProdutoNome() {
     return produtoNome;
   }
-  public void setProutoNome(String produtoNome) {
+  public void setProdutoNome(String produtoNome) {
     this.produtoNome = produtoNome;
   }
   public Integer getQuantidade() {
@@ -35,10 +35,10 @@ public class ResponseOrderItem {
   public void setPrecoUnitario(BigDecimal precoUnitario) {
     this.precoUnitario = precoUnitario;
   }
-  public BigDecimal getSubTotal() {
+  public BigDecimal getSubtotal() {
     return subtotal;
   }
-  public void setSubTotal(BigDecimal subtotal) {
+  public void setSubtotal(BigDecimal subtotal) {
     this.subtotal = subtotal;
   }
   @Override
