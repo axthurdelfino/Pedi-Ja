@@ -47,6 +47,13 @@ Estado atual
 - Isso difere do planejamento, que previa migrations V1 a V5 separadas. Manter essa diferença registrada para decisão posterior.
 - Timestamps das entidades usam LocalDateTime, compatível conceitualmente com TIMESTAMP da migration.
 - Última validação: mvn test -DskipTests executado com BUILD SUCCESS.
+- Repositories criados em src/main/java/Application/PediJa/Repositories: ClientRepository, ProductRepository, OrderRepository, OrderItemRepository e UserRepository.
+- UserRepository possui o método findByLogin(String login), previsto para a autenticação.
+- DTOs de request/response criados em src/main/java/Application/PediJa/Dto para User, Client, Product, Order e OrderItem.
+- RequestOrder recebe clienteId, paymentMethod e uma lista de items; não recebe status, precoUnitario ou valorTotal.
+- RequestOrderItem recebe somente produtoId e quantidade, com validações @NotNull e @Positive.
+- ResponseOrder contém os dados do pedido, valorTotal e a lista de ResponseOrderItem.
+- ResponseOrderItem expõe produtoId, produtoNome, quantidade, precoUnitario e subtotal. O subtotal é calculado no service e não é persistido como coluna própria.
 
 Entidades e tabelas
 -------------------
@@ -81,8 +88,8 @@ Próximas revisões prioritárias
 3. Definir cascade e orphanRemoval em Order.items.
 4. Confirmar nullable = false e precision/scale nos campos compatíveis com a migration.
 5. Definir valores iniciais de data, status e valorTotal, preferencialmente no domínio/@PrePersist ou no service.
-6. Criar repositories.
-7. Criar DTOs de request/response e validações.
+6. [CONCLUÍDO] Criar repositories.
+7. [CONCLUÍDO] Criar DTOs de request/response e validações iniciais.
 8. Implementar CRUD de Product e Client.
 9. Implementar criação de pedidos com itens, consolidação do mesmo produto, cópia do preço atual e cálculo do total no backend.
 10. Implementar filtros e alteração de status.
@@ -90,6 +97,14 @@ Próximas revisões prioritárias
 12. Criar tratamento padronizado de exceções.
 13. Criar testes unitários e de integração conforme necessário.
 14. Implementar/revisar o frontend React + TypeScript.
+
+Atualizações recentes
+---------------------
+- A camada de DTOs separa os contratos de entrada e saída das entidades JPA.
+- O frontend deverá listar produtos usando ResponseProduct, exibindo o nome e mantendo o id internamente para enviar produtoId no pedido.
+- A listagem de itens de um pedido pode usar GET /orders/{orderId}/items; nesse caso, pedidoId não precisa estar em cada ResponseOrderItem.
+- O status inicial do pedido deve ser definido pelo service ou pelo domínio como PENDENTE; o DEFAULT da migration permanece como fallback.
+- Permanecem pendentes a criação de Role, o alinhamento final entre constraints da migration e Bean Validation, e a correção do nome do setter setProutoNome em ResponseOrderItem.
 
 Regras essenciais
 -----------------
