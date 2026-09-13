@@ -20,8 +20,8 @@ public class ProductService {
 
   public ProductService(
 
-      ProductRepository productRepository,
-      ProductMapper productMapper) {
+    ProductRepository productRepository,
+    ProductMapper productMapper) {
 
     this.productRepository = productRepository;
     this.productMapper = productMapper;
