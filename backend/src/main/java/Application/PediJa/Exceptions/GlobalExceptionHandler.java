@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -20,8 +23,27 @@ public class GlobalExceptionHandler {
   }
   @ExceptionHandler(BusinessException.class)
   public ResponseEntity<StandardError> businessException(BusinessException e, HttpServletRequest request) {
-    StandardError error = new StandardError(Instant.now(), HttpStatus.UNPROCESSABLE_ENTITY.value(),
-        "Businnes Exception", e.getMessage(), request.getRequestURI());
-    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    StandardError error = new StandardError(Instant.now(), HttpStatus.UNPROCESSABLE_CONTENT.value(),
+        "Business Exception", e.getMessage(), request.getRequestURI());
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<StandardError> methodArgumentNotValid(
+      MethodArgumentNotValidException e, HttpServletRequest request) {
+
+    String message = e.getBindingResult().getFieldErrors().stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .collect(Collectors.joining("; "));
+
+    StandardError error = new StandardError(
+        Instant.now(),
+        HttpStatus.BAD_REQUEST.value(),
+        "Validation error",
+        message,
+        request.getRequestURI()
+    );
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 }
