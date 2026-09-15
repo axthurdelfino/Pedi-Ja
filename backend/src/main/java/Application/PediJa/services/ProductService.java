@@ -53,4 +53,8 @@ public class ProductService {
     return productMapper.toResponse(updated);
   }
 
+  public void delete(Long id) {
+    Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", id));
+    productRepository.delete(product);
+  }
 }
