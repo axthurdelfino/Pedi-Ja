@@ -44,4 +44,13 @@ public class ProductService {
 
     return productMapper.toResponse(saved);
   }
+
+  public ResponseProduct update(Long id, RequestProduct dto) {
+    Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", id));
+    productMapper.updateEntity(product, dto);
+    Product updated = productRepository.save(product);
+
+    return productMapper.toResponse(updated);
+  }
+
 }

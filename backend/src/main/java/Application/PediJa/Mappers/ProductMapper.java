@@ -1,9 +1,10 @@
 package Application.PediJa.Mappers;
 
+import org.springframework.stereotype.Component;
+
 import Application.PediJa.Dto.RequestProduct;
 import Application.PediJa.Dto.ResponseProduct;
 import Application.PediJa.Entities.Product;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
@@ -25,5 +26,11 @@ public class ProductMapper {
     response.setPreco(product.getPreco());
     response.setEstoque(product.getEstoque());
     return response;
+  }
+  public void updateEntity(Product product, RequestProduct dto) {
+      product.setNome(dto.getNome());
+      product.setDescricao(dto.getDescricao());
+      product.setPreco(dto.getPreco());
+      product.setEstoque(dto.getEstoque());
   }
 }
