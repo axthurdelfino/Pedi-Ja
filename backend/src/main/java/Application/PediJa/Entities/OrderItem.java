@@ -40,8 +40,7 @@ public class OrderItem {
   }
 
 
-  public OrderItem(OrderItemPK id, Order pedido, Product produto, Integer quantidade, BigDecimal precoUnitario) {
-    this.id = new OrderItemPK();
+  public OrderItem(Order pedido, Product produto, Integer quantidade, BigDecimal precoUnitario) {
     this.pedido = pedido;
     this.produto = produto;
     this.quantidade = quantidade;

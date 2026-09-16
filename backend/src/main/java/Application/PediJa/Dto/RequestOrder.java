@@ -6,10 +6,12 @@ import Application.PediJa.Entities.Enums.PaymentMethod;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class RequestOrder {
 
   @NotNull
+  @Positive
   private Long clienteId;
 
   @NotNull

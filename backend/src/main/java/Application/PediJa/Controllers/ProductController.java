@@ -34,7 +34,6 @@ public class ProductController {
   }
 
   @GetMapping(value = "/{id}")
-  @Valid
   public ResponseEntity<ResponseProduct> findById(@PathVariable Long id) {
     ResponseProduct product = services.findById(id);
     return ResponseEntity.ok().body(product);
