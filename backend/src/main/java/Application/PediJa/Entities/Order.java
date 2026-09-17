@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -121,5 +122,18 @@ public class Order {
 
   public List<OrderItem> getItems() {
     return items;
+  }
+
+  @PrePersist
+  private void prePersist() {
+    if (dataPedido == null) {
+      dataPedido = LocalDateTime.now();
+    }
+    if (orderStatus == null) {
+      orderStatus = OrderStatus.PENDENTE;
+    }
+    if (valorTotal == null) {
+      valorTotal = BigDecimal.ZERO;
+    }
   }
 }

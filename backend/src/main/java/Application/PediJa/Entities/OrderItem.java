@@ -18,22 +18,24 @@ import jakarta.persistence.Table;
 public class OrderItem {
 
   @EmbeddedId
-  private OrderItemPK id;
+  private OrderItemPK id = new OrderItemPK();
 
   @JsonIgnore
-  @ManyToOne
+  @ManyToOne(optional = false)
   @MapsId("pedidoId")
-  @JoinColumn(name = "pedido_id")
+  @JoinColumn(name = "pedido_id", nullable = false)
   private Order pedido;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @MapsId("produtoId")
-  @JoinColumn(name = "produto_id")
+  @JoinColumn(name = "produto_id", nullable = false)
+
   private Product produto;
 
+  @Column(name = "quantidade", nullable = false)
   private Integer quantidade;
 
-  @Column(name = "preco_unitario")
+  @Column(name = "preco_unitario", nullable = false, precision = 10, scale = 2)
   private BigDecimal precoUnitario;
 
   public OrderItem() {

@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -106,5 +107,12 @@ public class Client {
 
   public void setDataCadastro(LocalDateTime dataCadastro) {
     this.dataCadastro = dataCadastro;
+  }
+
+  @PrePersist
+  private void prePersist() {
+    if (dataCadastro == null) {
+      dataCadastro = LocalDateTime.now();
+    }
   }
 }
