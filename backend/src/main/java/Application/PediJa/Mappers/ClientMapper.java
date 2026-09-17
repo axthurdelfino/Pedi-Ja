@@ -18,6 +18,14 @@ public class ClientMapper {
     return client;
   }
 
+  public void updateEntity(Client client, RequestClient dto) {
+    client.setNome(dto.getNome());
+    client.setCpf(dto.getCpf());
+    client.setTelefone(dto.getTelefone());
+    client.setEmail(dto.getEmail());
+    client.setEndereco(dto.getEndereco());
+  }
+
   public ResponseClient toResponse(Client client) {
     ResponseClient response = new ResponseClient();
     response.setId(client.getId());
