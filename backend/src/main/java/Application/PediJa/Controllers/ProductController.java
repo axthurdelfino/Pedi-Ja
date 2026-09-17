@@ -20,7 +20,7 @@ import Application.PediJa.services.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/products")
+@RequestMapping(value = "/produtos")
 public class ProductController {
 
   @Autowired
