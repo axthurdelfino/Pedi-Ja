@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import Application.PediJa.Dto.RequestOrder;
 import Application.PediJa.Dto.RequestOrderItem;
+import Application.PediJa.Dto.RequestOrderStatus;
 import Application.PediJa.Dto.ResponseOrder;
 import Application.PediJa.Dto.ResponseOrderItem;
 import Application.PediJa.Entities.Client;
@@ -114,5 +115,16 @@ public class OrderService {
 
     return convertToResponse(saved);
   }
+  @Transactional
+  public ResponseOrder updatedOrder(Long id, RequestOrderStatus dto) {
+    Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pedido", id));
+    if (order.getOrderStatus().validarTrans(dto.getStatus())) {
+      order.setOrderStatus(dto.getStatus());
+    } else {
+      throw new BusinessException("Transicao de Status Invalida");
+    }
+    Order saved = orderRepository.save(order);
 
+    return convertToResponse(saved);
+  }
 }
