@@ -2,7 +2,6 @@ package Application.PediJa.Controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,8 +23,11 @@ import jakarta.validation.Valid;
 @RequestMapping(value = "/pedidos")
 public class OrderController {
 
-  @Autowired
   OrderService services;
+
+  public OrderController(OrderService services){
+      this.services = services;
+  }
 
   @GetMapping
   public ResponseEntity<List<ResponseOrder>> findAll() {
@@ -52,6 +54,7 @@ public class OrderController {
     services.delete(id);
     return ResponseEntity.noContent().build();
   }
+
   @PatchMapping(value = "/{id}/status")
   public ResponseEntity<ResponseOrder> updatedStatus(@PathVariable Long id, @Valid @RequestBody RequestOrderStatus dto) {
     ResponseOrder atualizar = services.updatedOrder(id, dto);
