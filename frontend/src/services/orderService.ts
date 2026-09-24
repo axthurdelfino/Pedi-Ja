@@ -1,5 +1,11 @@
 import { request } from "../lib/http";
 import type { Order, OrderStatus } from "../types";
+export const ordersChanged = "pedija:orders-changed";
+async function notifyChange<T>(operation: Promise<T>): Promise<T> {
+  const result = await operation;
+  window.dispatchEvent(new Event(ordersChanged));
+  return result;
+}
 export type CreateOrderPayload = {
   clienteId: number;
   paymentMethod: Order["paymentMethod"];
@@ -22,14 +28,19 @@ export const orderService = {
   },
   findById: (id: number) => request<Order>(`/pedidos/${id}`),
   create: (payload: CreateOrderPayload) =>
-    request<Order>("/pedidos", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    notifyChange(
+      request<Order>("/pedidos", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    ),
   updateStatus: (id: number, status: OrderStatus) =>
-    request<Order>(`/pedidos/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
-  remove: (id: number) => request<void>(`/pedidos/${id}`, { method: "DELETE" }),
+    notifyChange(
+      request<Order>(`/pedidos/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+    ),
+  remove: (id: number) =>
+    notifyChange(request<void>(`/pedidos/${id}`, { method: "DELETE" })),
 };

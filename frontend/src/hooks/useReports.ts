@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { orderService } from "../services/orderService";
+import { orderService, ordersChanged } from "../services/orderService";
 import { useResource } from "./useResource";
 const load = () => orderService.findAll();
 export function useReports() {
-  const resource = useResource(load, []);
+  const resource = useResource(load, [], ordersChanged);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const invalid = Boolean(start && end && start > end);

@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { errorMessage } from "../hooks/useResource";
+import Icon from "../components/Icon";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -33,7 +34,10 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-presentation">
         <div className="brand login-brand">
-          <span className="brand-mark">◆</span> PediJa
+          <span className="brand-mark">
+            <Icon name="bag" />
+          </span>{" "}
+          PediJa
         </div>
         <div className="presentation-copy">
           <h1>
@@ -48,21 +52,27 @@ export default function LoginPage() {
         </div>
         <div className="presentation-features">
           <div>
-            <span>▣</span>
+            <span>
+              <Icon name="bag" />
+            </span>
             <p>
               <strong>Centralize seus pedidos</strong>
               <small>Tenha todos os pedidos em um só lugar.</small>
             </p>
           </div>
           <div>
-            <span>♙</span>
+            <span>
+              <Icon name="clients" />
+            </span>
             <p>
               <strong>Atenda seus clientes melhor</strong>
               <small>Informações completas para decisões rápidas.</small>
             </p>
           </div>
           <div>
-            <span>▥</span>
+            <span>
+              <Icon name="reports" />
+            </span>
             <p>
               <strong>Acompanhe seus resultados</strong>
               <small>Relatórios claros para impulsionar suas vendas.</small>
@@ -98,10 +108,12 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                aria-label="Mostrar ou ocultar senha"
+                className="password-toggle"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                aria-pressed={showPassword}
                 onClick={() => setShowPassword((v) => !v)}
               >
-                ◉
+                <Icon name="eye" />
               </button>
             </div>
           </label>
@@ -116,7 +128,11 @@ export default function LoginPage() {
             </label>
             <span>Problemas de acesso? Contate o administrador.</span>
           </div>
-          {error && <div className="form-error">{error}</div>}
+          {error && (
+            <div className="form-error" role="alert">
+              {error}
+            </div>
+          )}
           <button className="primary-button login-button" disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}
           </button>

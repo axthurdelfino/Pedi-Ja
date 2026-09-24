@@ -1,6 +1,10 @@
 import { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
-import { orderService, type OrderFilters } from "../services/orderService";
+import { Link, useLocation } from "react-router-dom";
+import {
+  orderService,
+  ordersChanged,
+  type OrderFilters,
+} from "../services/orderService";
 import { useResource } from "../hooks/useResource";
 import OrderTable from "../components/OrderTable";
 import Pagination from "../components/Pagination";
@@ -9,8 +13,13 @@ export default function OrdersPage() {
   const [filters, setFilters] = useState<OrderFilters>({});
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const location = useLocation();
   const loader = useCallback(() => orderService.findAll(filters), [filters]);
-  const { data: orders, error, loading } = useResource(loader, []);
+  const {
+    data: orders,
+    error,
+    loading,
+  } = useResource(loader, [], ordersChanged);
   const filtered = orders.filter((o) =>
     `${o.id} ${o.clienteNome}`.toLowerCase().includes(search.toLowerCase()),
   );
@@ -23,7 +32,11 @@ export default function OrdersPage() {
     <div>
       <div className="page-heading">
         <h1>Pedidos</h1>
-        <Link className="primary-button" to="/pedidos/novo">
+        <Link
+          className="primary-button"
+          to="/pedidos/novo"
+          state={{ backgroundLocation: location }}
+        >
           ＋ Novo pedido
         </Link>
       </div>

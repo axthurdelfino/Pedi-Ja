@@ -5,6 +5,8 @@ import { errorMessage, useResource } from "../hooks/useResource";
 import type { Order, OrderStatus } from "../types";
 import { dateTime, money } from "../utils/format";
 import StatusBadge from "../components/StatusBadge";
+import { useFormGuard, useLeaveGuard } from "../contexts/LeaveGuardContext";
+import { toast } from "sonner";
 const transitions: Record<OrderStatus, OrderStatus[]> = {
   PENDENTE: ["PAGO", "CANCELADO"],
   PAGO: ["ENVIADO"],
@@ -23,13 +25,16 @@ export default function OrderDetailsPage() {
   } = useResource<Order | null>(loader, null);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState("");
+  const { complete } = useLeaveGuard();
+  useFormGuard({ dirty: false, busy });
   async function update(status: OrderStatus) {
     if (!order || !window.confirm(`Alterar pedido para ${status}?`)) return;
     setBusy(true);
     setFailure("");
     try {
       await orderService.updateStatus(order.id, status);
-      await reload();
+      await reload(true);
+      toast.success("Status do pedido atualizado.");
     } catch (e) {
       setFailure(errorMessage(e));
     } finally {
@@ -48,7 +53,8 @@ export default function OrderDetailsPage() {
     setFailure("");
     try {
       await orderService.remove(order.id);
-      navigate("/pedidos");
+      toast.success("Pedido excluído.");
+      complete(() => navigate("/pedidos"));
     } catch (e) {
       setFailure(errorMessage(e));
     } finally {
@@ -105,18 +111,18 @@ export default function OrderDetailsPage() {
                   <thead>
                     <tr>
                       <th>Produto</th>
-                      <th>Quantidade</th>
-                      <th>Preço da venda</th>
-                      <th>Subtotal</th>
+                      <th className="money-cell">Quantidade</th>
+                      <th className="money-cell">Preço da venda</th>
+                      <th className="money-cell">Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>
                     {order.items.map((i) => (
                       <tr key={i.produtoId}>
-                        <td>{i.produtoNome}</td>
-                        <td>{i.quantidade}</td>
-                        <td>{money(i.precoUnitario)}</td>
-                        <td>{money(i.subtotal)}</td>
+                        <td className="text-cell">{i.produtoNome}</td>
+                        <td className="money-cell">{i.quantidade}</td>
+                        <td className="money-cell">{money(i.precoUnitario)}</td>
+                        <td className="money-cell">{money(i.subtotal)}</td>
                       </tr>
                     ))}
                   </tbody>

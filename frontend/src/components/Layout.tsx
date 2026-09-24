@@ -1,31 +1,46 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
+import Icon from "./Icon";
+import { useLeaveGuard } from "../contexts/LeaveGuardContext";
 
 const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: "▦" },
-  { to: "/pedidos", label: "Pedidos", icon: "▤" },
-  { to: "/clientes", label: "Clientes", icon: "♙" },
-  { to: "/produtos", label: "Produtos", icon: "▣" },
-  { to: "/financeiro", label: "Financeiro", icon: "$" },
-  { to: "/relatorios", label: "Relatórios", icon: "▥" },
-];
+  { to: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { to: "/pedidos", label: "Pedidos", icon: "orders" },
+  { to: "/clientes", label: "Clientes", icon: "clients" },
+  { to: "/produtos", label: "Produtos", icon: "products" },
+  { to: "/financeiro", label: "Financeiro", icon: "finance" },
+  { to: "/relatorios", label: "Relatórios", icon: "reports" },
+] as const;
 
 export default function Layout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { requestLeave } = useLeaveGuard();
 
   function signOut() {
-    logout();
-    navigate("/login");
+    requestLeave(() => {
+      logout();
+      navigate("/login");
+    });
   }
 
   return (
     <div className={`app-shell ${menuOpen ? "menu-open" : ""}`}>
+      {menuOpen && (
+        <button
+          className="menu-backdrop"
+          aria-label="Fechar menu"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-mark">◆</span> PediJa
+          <span className="brand-symbol">
+            <Icon name="bag" />
+          </span>{" "}
+          PediJa
         </div>
         <nav className="sidebar-nav">
           {navItems.map((item) => (
@@ -37,7 +52,9 @@ export default function Layout() {
                 isActive ? "nav-item active" : "nav-item"
               }
             >
-              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-icon">
+                <Icon name={item.icon} />
+              </span>
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -61,7 +78,7 @@ export default function Layout() {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            ☰
+            <Icon name="menu" />
           </button>
           <span className="topbar-title">PediJa</span>
           <div className="topbar-actions">

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { errorMessage, useResource } from "./useResource";
 export function useCrud<T extends { id: number }, I>(service: {
   findAll: (name?: string) => Promise<T[]>;
@@ -12,12 +13,16 @@ export function useCrud<T extends { id: number }, I>(service: {
   const loader = useCallback(() => service.findAll(search), [service, search]);
   const resource = useResource(loader, []);
   async function save(input: I, id?: number) {
+    if (busy) return false;
     setBusy(true);
     setFailure("");
     try {
       if (id !== undefined) await service.update(id, input);
       else await service.create(input);
-      await resource.reload();
+      toast.success(
+        id !== undefined ? "Alterações salvas." : "Cadastro realizado.",
+      );
+      await resource.reload(true);
       return true;
     } catch (e) {
       setFailure(errorMessage(e));
@@ -35,7 +40,8 @@ export function useCrud<T extends { id: number }, I>(service: {
     setFailure("");
     try {
       await service.remove(id);
-      await resource.reload();
+      toast.success("Registro excluído.");
+      await resource.reload(true);
     } catch (e) {
       setFailure(errorMessage(e));
     } finally {
@@ -48,6 +54,7 @@ export function useCrud<T extends { id: number }, I>(service: {
     search,
     setSearch,
     busy,
+    clearFailure: () => setFailure(""),
     save,
     remove,
   };

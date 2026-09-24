@@ -26,11 +26,11 @@ export default function ClientsPage() {
         { key: "endereco", label: "Endereço", minLength: 10, maxLength: 255 },
       ]}
       columns={[
-        { label: "Nome", render: (c) => c.nome },
+        { wrap: true, label: "Nome", render: (c) => c.nome },
         { label: "CPF", render: (c) => c.cpf },
         { label: "Telefone", render: (c) => c.telefone },
-        { label: "E-mail", render: (c) => c.email },
-        { label: "Endereço", render: (c) => c.endereco },
+        { wrap: true, label: "E-mail", render: (c) => c.email },
+        { wrap: true, label: "Endereço", render: (c) => c.endereco },
       ]}
       toInput={(c) => ({
         nome: c.nome,

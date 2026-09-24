@@ -23,7 +23,7 @@ export default function DashboardPage() {
   );
   const max = Math.max(1, ...values);
   const points = values
-    .map((v, i) => `${i * 110 + 10},${190 - (v / max) * 170}`)
+    .map((v, i) => `${i * 100 + 50},${190 - (v / max) * 170}`)
     .join(" ");
   const recent = [...r.orders]
     .sort((a, b) => b.dataPedido.localeCompare(a.dataPedido))
@@ -81,24 +81,25 @@ export default function DashboardPage() {
             <div className="chart">
               <div className="y-labels">
                 <span>{money(max)}</span>
-                <span>R$ 0</span>
               </div>
               <svg
-                viewBox="0 0 680 210"
                 role="img"
                 aria-label="Vendas pagas por data de criação do pedido"
               >
-                <polyline
-                  points={points}
-                  fill="none"
-                  stroke="#125bd5"
-                  strokeWidth="3"
-                />
+                <svg viewBox="0 0 700 210" preserveAspectRatio="none">
+                  <polyline
+                    points={points}
+                    fill="none"
+                    stroke="#125bd5"
+                    strokeWidth="3"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
                 {values.map((v, i) => (
                   <circle
                     key={days[i]}
-                    cx={i * 110 + 10}
-                    cy={190 - (v / max) * 170}
+                    cx={`${((i + 0.5) / 7) * 100}%`}
+                    cy={`${((190 - (v / max) * 170) / 210) * 100}%`}
                     r="5"
                     fill="#125bd5"
                   >
@@ -108,6 +109,7 @@ export default function DashboardPage() {
                   </circle>
                 ))}
               </svg>
+              <span className="chart-zero">R$ 0</span>
               <div className="x-labels">
                 {days.map((d) => (
                   <span key={d}>

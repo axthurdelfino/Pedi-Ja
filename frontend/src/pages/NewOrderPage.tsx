@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import type { PaymentMethod } from "../types";
 import { useNewOrder } from "../hooks/useNewOrder";
 import { money } from "../utils/format";
+import { useFormGuard, useLeaveGuard } from "../contexts/LeaveGuardContext";
+import { useDialogClose } from "../components/Dialog";
+import { toast } from "sonner";
 export default function NewOrderPage() {
   const navigate = useNavigate();
   const {
@@ -25,10 +28,25 @@ export default function NewOrderPage() {
     loading,
     save,
   } = useNewOrder();
+  const { complete } = useLeaveGuard();
+  const close = useDialogClose();
+  useFormGuard({
+    dirty: Boolean(
+      clienteId ||
+      productId ||
+      lines.length ||
+      quantity !== 1 ||
+      paymentMethod !== "PIX",
+    ),
+    busy: saving,
+  });
   async function submit(event: FormEvent) {
     event.preventDefault();
     const order = await save();
-    if (order) navigate("/pedidos/" + order.id);
+    if (order) {
+      toast.success("Pedido criado.");
+      complete(() => navigate("/pedidos/" + order.id));
+    }
   }
   return (
     <form onSubmit={submit}>
@@ -40,137 +58,158 @@ export default function NewOrderPage() {
           </p>
         </div>
         <div className="heading-actions">
-          <Link className="outline-button" to="/pedidos">
+          <button
+            type="button"
+            className="outline-button"
+            onClick={() => (close ? close() : navigate("/pedidos"))}
+          >
             Cancelar
-          </Link>
+          </button>
 
           <button className="primary-button" disabled={saving || loading}>
             {saving ? "Salvando…" : "Criar pedido"}
           </button>
         </div>
       </div>
-      {error && <div className="form-error">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
       {loading && <p role="status">Carregando clientes e produtos…</p>}
-      <section className="panel order-form-panel">
-        <div className="form-grid">
-          <label>
-            Cliente
-            <select
-              value={clienteId}
-              onChange={(e) => setClienteId(e.target.value)}
-            >
-              <option value="">Selecione um cliente</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Forma de pagamento
-            <select
-              value={paymentMethod}
-              onChange={(e) =>
-                setPaymentMethod(e.target.value as PaymentMethod)
-              }
-            >
-              <option value="PIX">PIX</option>
-              <option value="CARTAO">Cartão</option>
-              <option value="DINHEIRO">Dinheiro</option>
-            </select>
-          </label>
-          <label>
-            Status
-            <input value="Pendente" disabled />
-          </label>
-          <label>
-            Data do pedido
-            <input value={new Date().toLocaleDateString("pt-BR")} disabled />
-          </label>
-        </div>
-      </section>
-      <section className="panel items-panel">
-        <div className="panel-heading">
-          <h2>Itens do Pedido</h2>
-          <div className="add-line">
-            <select
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-            >
-              <option value="">Adicionar produto</option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.nome} — {money(product.preco)}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-            />
-            <button
-              type="button"
-              className="outline-button"
-              onClick={addProduct}
-            >
-              ＋ Adicionar
-            </button>
+      <fieldset className="order-fields" disabled={saving}>
+        <section className="panel order-form-panel">
+          <div className="form-grid">
+            <label>
+              Cliente
+              <select
+                aria-label="Cliente"
+                value={clienteId}
+                onChange={(e) => setClienteId(e.target.value)}
+              >
+                <option value="">Selecione um cliente</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.nome}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Forma de pagamento
+              <select
+                aria-label="Forma de pagamento"
+                value={paymentMethod}
+                onChange={(e) =>
+                  setPaymentMethod(e.target.value as PaymentMethod)
+                }
+              >
+                <option value="PIX">PIX</option>
+                <option value="CARTAO">Cartão</option>
+                <option value="DINHEIRO">Dinheiro</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <input value="Pendente" disabled />
+            </label>
+            <label>
+              Data do pedido
+              <input value={new Date().toLocaleDateString("pt-BR")} disabled />
+            </label>
           </div>
-        </div>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Produto</th>
-                <th>Qtd</th>
-                <th>Preço Unit.</th>
-                <th>Total</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lines.map((line) => {
-                const product = products.find((p) => p.id === line.produtoId)!;
-                return (
-                  <tr key={line.produtoId}>
-                    <td>{product?.nome}</td>
-                    <td>{line.quantidade}</td>
-                    <td>{money(product?.preco || 0)}</td>
-                    <td>{money((product?.preco || 0) * line.quantidade)}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() => removeProduct(line.produtoId)}
-                      >
-                        ×
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {lines.length === 0 && (
-            <div className="empty-order">
-              ▱<strong>Nenhum item adicionado</strong>
-              <span>
-                Selecione um produto acima para incluir itens no pedido.
-              </span>
+        </section>
+        <section className="panel items-panel">
+          <div className="panel-heading">
+            <h2>Itens do Pedido</h2>
+            <div className="add-line">
+              <select
+                aria-label="Produto"
+                value={productId}
+                onChange={(e) => setProductId(e.target.value)}
+              >
+                <option value="">Adicionar produto</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.nome} — {money(product.preco)}
+                  </option>
+                ))}
+              </select>
+              <input
+                aria-label="Quantidade"
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+              />
+              <button
+                type="button"
+                className="outline-button"
+                onClick={addProduct}
+              >
+                ＋ Adicionar
+              </button>
             </div>
-          )}
-        </div>
-        <div className="total-box">
-          <span>Subtotal</span>
-          <strong>{money(total)}</strong>
-          <hr />
-          <span>Total</span>
-          <strong className="total-value">{money(total)}</strong>
-        </div>
-      </section>
+          </div>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th className="money-cell">Qtd</th>
+                  <th className="money-cell">Preço Unit.</th>
+                  <th className="money-cell">Total</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lines.map((line) => {
+                  const product = products.find(
+                    (p) => p.id === line.produtoId,
+                  )!;
+                  return (
+                    <tr key={line.produtoId}>
+                      <td className="text-cell">{product?.nome}</td>
+                      <td className="money-cell">{line.quantidade}</td>
+                      <td className="money-cell">
+                        {money(product?.preco || 0)}
+                      </td>
+                      <td className="money-cell">
+                        {money((product?.preco || 0) * line.quantidade)}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          aria-label={`Remover ${product?.nome}`}
+                          className="delete-button"
+                          onClick={() => removeProduct(line.produtoId)}
+                        >
+                          ×
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {lines.length === 0 && (
+              <div className="empty-order">
+                ▱<strong>Nenhum item adicionado</strong>
+                <span>
+                  Selecione um produto acima para incluir itens no pedido.
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="total-box">
+            <span>Subtotal</span>
+            <strong>{money(total)}</strong>
+            <hr />
+            <span>Total</span>
+            <strong className="total-value">{money(total)}</strong>
+          </div>
+        </section>
+      </fieldset>
     </form>
   );
 }

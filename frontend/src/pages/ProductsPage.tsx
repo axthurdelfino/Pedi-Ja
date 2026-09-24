@@ -29,10 +29,10 @@ export default function ProductsPage() {
         },
       ]}
       columns={[
-        { label: "Produto", render: (p) => p.nome },
-        { label: "Descrição", render: (p) => p.descricao },
-        { label: "Preço", render: (p) => money(p.preco) },
-        { label: "Estoque", render: (p) => p.estoque },
+        { wrap: true, label: "Produto", render: (p) => p.nome },
+        { wrap: true, label: "Descrição", render: (p) => p.descricao },
+        { numeric: true, label: "Preço", render: (p) => money(p.preco) },
+        { numeric: true, label: "Estoque", render: (p) => p.estoque },
       ]}
       toInput={(p) => ({
         nome: p.nome,
