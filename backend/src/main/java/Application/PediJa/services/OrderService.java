@@ -16,6 +16,7 @@ import Application.PediJa.Entities.Client;
 import Application.PediJa.Entities.Order;
 import Application.PediJa.Entities.OrderItem;
 import Application.PediJa.Entities.Product;
+import Application.PediJa.Entities.Enums.OrderStatus;
 import Application.PediJa.Exceptions.BusinessException;
 import Application.PediJa.Exceptions.ResourceNotFoundException;
 import Application.PediJa.Mappers.OrderItemMapper;
@@ -57,6 +58,27 @@ public class OrderService {
   @Transactional
   public List<ResponseOrder> findAll() {
     return orderRepository.findAll().stream().map(this::convertToResponse).toList();
+  }
+
+  @Transactional
+  public List<ResponseOrder> findByStatus(OrderStatus status) {
+    return orderRepository.findByStatus(status).stream()
+        .map(this::convertToResponse)
+        .toList();
+  }
+
+  @Transactional
+  public List<ResponseOrder> findByClientId(Long clientId) {
+    return orderRepository.findByClientId(clientId).stream()
+        .map(this::convertToResponse)
+        .toList();
+  }
+
+  @Transactional
+  public List<ResponseOrder> findByStatusAndClientId(OrderStatus status, Long clientId) {
+    return orderRepository.findByStatusAndClientId(status, clientId).stream()
+        .map(this::convertToResponse)
+        .toList();
   }
 
   @Transactional

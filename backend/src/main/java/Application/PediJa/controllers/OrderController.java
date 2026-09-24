@@ -1,4 +1,4 @@
-package Application.PediJa.Controllers;
+package Application.PediJa.controllers;
 
 import java.util.List;
 
@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Application.PediJa.Dto.RequestOrder;
 import Application.PediJa.Dto.RequestOrderStatus;
 import Application.PediJa.Dto.ResponseOrder;
+import Application.PediJa.Entities.Enums.OrderStatus;
 import Application.PediJa.services.OrderService;
 import jakarta.validation.Valid;
 
@@ -30,8 +32,20 @@ public class OrderController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ResponseOrder>> findAll() {
-    List<ResponseOrder> orders = services.findAll();
+  public ResponseEntity<List<ResponseOrder>> findAll(
+      @RequestParam(required = false) OrderStatus status,
+      @RequestParam(required = false) Long clienteId) {
+    List<ResponseOrder> orders;
+
+    if (status != null && clienteId != null) {
+      orders = services.findByStatusAndClientId(status, clienteId);
+    } else if (status != null) {
+      orders = services.findByStatus(status);
+    } else if (clienteId != null) {
+      orders = services.findByClientId(clienteId);
+    } else {
+      orders = services.findAll();
+    }
 
     return ResponseEntity.ok().body(orders);
   }

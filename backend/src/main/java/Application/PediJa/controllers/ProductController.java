@@ -1,4 +1,4 @@
-package Application.PediJa.Controllers;
+package Application.PediJa.controllers;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Application.PediJa.Dto.RequestProduct;
@@ -27,9 +28,10 @@ public class ProductController {
   ProductService services;
 
   @GetMapping
-  public ResponseEntity<List<ResponseProduct>> findAll() {
+  public ResponseEntity<List<ResponseProduct>> findAll(
+      @RequestParam(required = false) String nome) {
 
-    List<ResponseProduct> list = services.findAll();
+    List<ResponseProduct> list = services.findAll(nome);
     return ResponseEntity.ok().body(list);
   }
 

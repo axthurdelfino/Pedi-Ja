@@ -24,8 +24,16 @@ public class ClientService {
     this.clientMapper = clientMapper;
   }
 
+  public List<ResponseClient> findAll(String nome) {
+    List<Client> clients = nome == null || nome.isBlank()
+        ? clientRepository.findAll()
+        : clientRepository.findByNomeContaining(nome);
+
+    return clients.stream().map(clientMapper::toResponse).toList();
+  }
+
   public List<ResponseClient> findAll() {
-    return clientRepository.findAll().stream().map(clientMapper::toResponse).toList();
+    return findAll(null);
   }
 
   public ResponseClient findById(Long id) {

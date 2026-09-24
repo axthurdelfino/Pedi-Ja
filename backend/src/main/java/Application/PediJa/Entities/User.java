@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
 
 @Entity
@@ -45,5 +46,12 @@ public class User {
 
   public void setDataCriacao(LocalDateTime dataCriacao) {
     this.dataCriacao = dataCriacao;
+  }
+
+  @PrePersist
+  private void prePersist() {
+    if (dataCriacao == null) {
+      dataCriacao = LocalDateTime.now();
+    }
   }
 }

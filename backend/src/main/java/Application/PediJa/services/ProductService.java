@@ -27,8 +27,16 @@ public class ProductService {
     this.productMapper = productMapper;
   }
 
+  public List<ResponseProduct> findAll(String nome) {
+    List<Product> products = nome == null || nome.isBlank()
+        ? productRepository.findAll()
+        : productRepository.findByNomeContaining(nome);
+
+    return products.stream().map(productMapper::toResponse).toList();
+  }
+
   public List<ResponseProduct> findAll() {
-    return productRepository.findAll().stream().map(productMapper::toResponse).toList();
+    return findAll(null);
   }
 
   public ResponseProduct findById(Long id) {
