@@ -20,6 +20,7 @@ public class UserMapper {
     response.setId(user.getId());
     response.setLogin(user.getLogin());
     response.setDataCriacao(user.getDataCriacao());
+    response.setRole(user.getRole());
     return response;
   }
 }

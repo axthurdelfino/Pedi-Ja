@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import Application.PediJa.Dto.RequestUser;
 import Application.PediJa.Dto.ResponseUser;
 import Application.PediJa.Entities.User;
+import Application.PediJa.Entities.Enums.Role;
 import Application.PediJa.Exceptions.BusinessException;
 import Application.PediJa.Exceptions.ResourceNotFoundException;
 import Application.PediJa.Mappers.UserMapper;
@@ -47,6 +48,7 @@ public class UserService {
 
     User user = userMapper.toEntity(dto);
     user.setPassword(passwordEncoder.encode(dto.getSenha()));
+    user.setRole(Role.USER);
     return userMapper.toResponse(userRepository.save(user));
   }
 

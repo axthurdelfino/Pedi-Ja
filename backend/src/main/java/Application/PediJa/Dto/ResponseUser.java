@@ -1,12 +1,14 @@
 package Application.PediJa.Dto;
 
 import java.time.LocalDateTime;
+import Application.PediJa.Entities.Enums.Role;
 
 public class ResponseUser {
 
   private Long id;
   private String login;
   private LocalDateTime dataCriacao;
+  private Role role;
 
   public Long getId() {
     return id;
@@ -25,6 +27,14 @@ public class ResponseUser {
   }
   public void setDataCriacao(LocalDateTime dataCriacao) {
     this.dataCriacao = dataCriacao;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
   }
   @Override
   public int hashCode() {
