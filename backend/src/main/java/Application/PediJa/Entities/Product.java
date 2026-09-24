@@ -12,6 +12,9 @@ import jakarta.persistence.Table;
 @Table(name = "produto")
 public class Product {
 
+  @jakarta.persistence.Version
+  private Long version;
+
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

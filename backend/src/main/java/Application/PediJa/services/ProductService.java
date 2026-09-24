@@ -12,6 +12,7 @@ import Application.PediJa.Exceptions.ResourceNotFoundException;
 import Application.PediJa.Mappers.ProductMapper;
 import Application.PediJa.Repositories.ProductRepository;
 
+@org.springframework.transaction.annotation.Transactional
 @Service
 public class ProductService {
 

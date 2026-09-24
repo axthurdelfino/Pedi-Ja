@@ -34,21 +34,12 @@ public class OrderController {
   @GetMapping
   public ResponseEntity<List<ResponseOrder>> findAll(
       @RequestParam(required = false) OrderStatus status,
-      @RequestParam(required = false) Long clienteId) {
-    List<ResponseOrder> orders;
-
-    if (status != null && clienteId != null) {
-      orders = services.findByStatusAndClientId(status, clienteId);
-    } else if (status != null) {
-      orders = services.findByStatus(status);
-    } else if (clienteId != null) {
-      orders = services.findByClientId(clienteId);
-    } else {
-      orders = services.findAll();
-    }
-
-    return ResponseEntity.ok().body(orders);
+      @RequestParam(required = false) Long clienteId,
+      @RequestParam(required = false) java.math.BigDecimal minPrice,
+      @RequestParam(required = false) java.math.BigDecimal maxPrice) {
+    return ResponseEntity.ok(services.search(status, clienteId, minPrice, maxPrice));
   }
+
   @GetMapping(value = "/{id}")
   public ResponseEntity<ResponseOrder> findById(@PathVariable Long id) {
     ResponseOrder order = services.findById(id);

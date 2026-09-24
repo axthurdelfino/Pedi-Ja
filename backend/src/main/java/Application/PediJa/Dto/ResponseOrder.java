@@ -11,6 +11,9 @@ public class ResponseOrder {
 
   private Long id;
   private Long clienteId;
+  private String clienteNome;
+  public String getClienteNome() { return clienteNome; }
+  public void setClienteNome(String clienteNome) { this.clienteNome = clienteNome; }
   private LocalDateTime dataPedido;
   private OrderStatus status;
   private PaymentMethod paymentMethod;

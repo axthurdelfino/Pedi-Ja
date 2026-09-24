@@ -44,6 +44,15 @@ public class OrderService {
     this.orderItemMapper = orderItemMapper;
   }
 
+  @Transactional
+  public List<ResponseOrder> search(OrderStatus status, Long clienteId, BigDecimal minPrice, BigDecimal maxPrice) {
+    if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
+        || (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0)) {
+      throw new BusinessException("Intervalo de valores inválido");
+    }
+    return orderRepository.search(status, clienteId, minPrice, maxPrice).stream().map(this::convertToResponse).toList();
+  }
+
   private ResponseOrder convertToResponse(Order order) {
     List<ResponseOrderItem> items = order.getItems().stream().map(item -> {
           BigDecimal subtotal = item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade()));
@@ -91,6 +100,9 @@ public class OrderService {
   public void delete(Long id) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order", id));
 
+    if (order.getOrderStatus() != OrderStatus.CANCELADO) {
+      throw new BusinessException("Cancele o pedido antes de excluir. Pedidos pagos ou enviados devem ser preservados.");
+    }
     orderRepository.delete(order);
   }
 
@@ -106,7 +118,10 @@ public class OrderService {
 
     for (RequestOrderItem obj : dto.getItems()) {
       quantidades.merge(obj.getProdutoId(), obj.getQuantidade(),
-          Integer::sum);
+          (a, b) -> {
+            try { return Math.addExact(a, b); }
+            catch (ArithmeticException e) { throw new BusinessException("Quantidade excede o limite permitido"); }
+          });
     }
 
     for (Map.Entry<Long, Integer> entry : quantidades.entrySet()) {
@@ -132,6 +147,7 @@ public class OrderService {
 
     }
 
+    if (total.compareTo(new BigDecimal("99999999.99")) > 0) throw new BusinessException("Total excede o limite permitido");
     order.setValorTotal(total);
     Order saved = orderRepository.save(order);
 
@@ -141,6 +157,13 @@ public class OrderService {
   public ResponseOrder updatedOrder(Long id, RequestOrderStatus dto) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pedido", id));
     if (order.getOrderStatus().validarTrans(dto.getStatus())) {
+      if (dto.getStatus() == OrderStatus.CANCELADO && order.getOrderStatus() != OrderStatus.CANCELADO) {
+        for (OrderItem item : order.getItems()) {
+          Product product = item.getProduto();
+          try { product.setEstoque(Math.addExact(product.getEstoque(), item.getQuantidade())); }
+          catch (ArithmeticException e) { throw new BusinessException("Estoque excede o limite permitido"); }
+        }
+      }
       order.setOrderStatus(dto.getStatus());
     } else {
       throw new BusinessException("Transicao de Status Invalida");

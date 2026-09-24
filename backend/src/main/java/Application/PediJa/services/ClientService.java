@@ -12,6 +12,7 @@ import Application.PediJa.Exceptions.ResourceNotFoundException;
 import Application.PediJa.Mappers.ClientMapper;
 import Application.PediJa.Repositories.ClientRepository;
 
+@org.springframework.transaction.annotation.Transactional
 @Service
 public class ClientService {
 

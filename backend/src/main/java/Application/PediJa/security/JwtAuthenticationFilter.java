@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           SecurityContextHolder.getContext().setAuthentication(authentication);
         }
       }
-    } catch (JwtException | IllegalArgumentException exception) {
+    } catch (JwtException | IllegalArgumentException | org.springframework.security.core.userdetails.UsernameNotFoundException exception) {
       SecurityContextHolder.clearContext();
     }
 

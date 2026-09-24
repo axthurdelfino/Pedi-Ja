@@ -25,6 +25,9 @@ import jakarta.persistence.Table;
 @Table(name = "pedido")
 public class Order {
 
+  @jakarta.persistence.Version
+  private Long version;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -13,6 +13,28 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+  @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+  public ResponseEntity<StandardError> integrity(Exception e, HttpServletRequest request) {
+    return failure(HttpStatus.CONFLICT, "Dados duplicados ou registro vinculado a outros dados.", request);
+  }
+  @ExceptionHandler(org.springframework.dao.OptimisticLockingFailureException.class)
+  public ResponseEntity<StandardError> concurrent(Exception e, HttpServletRequest request) {
+    return failure(HttpStatus.CONFLICT, "Os dados foram alterados por outra operação. Atualize a página e tente novamente.", request);
+  }
+  @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+  public ResponseEntity<StandardError> authentication(Exception e, HttpServletRequest request) {
+    return failure(HttpStatus.UNAUTHORIZED, "Login ou senha inválidos.", request);
+  }
+  @ExceptionHandler({org.springframework.http.converter.HttpMessageNotReadableException.class,
+      org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
+  public ResponseEntity<StandardError> malformed(Exception e, HttpServletRequest request) {
+    return failure(HttpStatus.BAD_REQUEST, "Verifique os tipos e os valores enviados.", request);
+  }
+  private ResponseEntity<StandardError> failure(HttpStatus status, String message, HttpServletRequest request) {
+    return ResponseEntity.status(status).body(new StandardError(Instant.now(), status.value(),
+        status.getReasonPhrase(), message, request.getRequestURI()));
+  }
+
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
