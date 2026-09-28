@@ -28,8 +28,7 @@ public class ProductController {
   ProductService services;
 
   @GetMapping
-  public ResponseEntity<List<ResponseProduct>> findAll(
-      @RequestParam(required = false) String nome) {
+  public ResponseEntity<List<ResponseProduct>> findAll(@RequestParam(required = false) String nome) {
 
     List<ResponseProduct> list = services.findAll(nome);
     return ResponseEntity.ok().body(list);
