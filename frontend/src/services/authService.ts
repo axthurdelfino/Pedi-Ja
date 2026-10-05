@@ -1,9 +1,16 @@
 import { request } from "../lib/http";
-import { saveSession } from "../lib/session";
-export async function login(login: string, senha: string, remember = false) {
-  const result = await request<{ token: string; expiresIn: number }>(
-    "/auth/login",
-    { method: "POST", body: JSON.stringify({ login, senha }) },
-  );
-  saveSession(result.token, remember);
+
+export function login(login: string, senha: string) {
+  return request<void>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ login, senha }),
+  });
+}
+
+export function logout() {
+  return request<void>("/auth/logout", { method: "POST" });
+}
+
+export function currentUser() {
+  return request<{ login: string; roles: string[] }>("/auth/me");
 }

@@ -1,30 +1,28 @@
-import {
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  type Location,
-} from "react-router-dom";
-import Layout from "../components/Layout";
-import Modal from "../components/Modal";
+import { Navigate, Outlet, Route, Routes, useLocation, type Location } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import ClientsPage from "../pages/ClientsPage";
-import DashboardPage from "../pages/DashboardPage";
+import Layout from "../components/Layout";
 import LoginPage from "../pages/LoginPage";
+import DashboardPage from "../pages/DashboardPage";
+import OrdersPage from "../pages/OrdersPage";
 import NewOrderPage from "../pages/NewOrderPage";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
-import OrdersPage from "../pages/OrdersPage";
+import ClientsPage from "../pages/ClientsPage";
 import ProductsPage from "../pages/ProductsPage";
 import ReportsPage from "../pages/ReportsPage";
+import Modal from "../components/Modal";
+
 function ProtectedLayout() {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
+  if (!ready) return <p className="loading">Carregando sessão…</p>;
   return user ? <Layout /> : <Navigate to="/login" replace />;
 }
+
 function ProtectedOverlay() {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
+  if (!ready) return null;
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
+
 export default function AppRoutes() {
   const location = useLocation();
   const backgroundLocation = (
@@ -45,30 +43,29 @@ export default function AppRoutes() {
           <Route path="/financeiro" element={<ReportsPage financial />} />
           <Route path="/relatorios" element={<ReportsPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {backgroundLocation && (
+          <Routes>
+            <Route element={<ProtectedOverlay />}>
+              <Route
+                path="/pedidos/novo"
+                element={
+                  <Modal key={location.key} title="Novo pedido">
+                    <NewOrderPage />
+                  </Modal>
+                }
+              />
+              <Route
+                path="/pedidos/:id"
+                element={
+                  <Modal key={location.key} title="Detalhes do pedido">
+                    <OrderDetailsPage />
+                  </Modal>
+                }
+              />
+            </Route>
+          </Routes>
+        )}
       </Routes>
-      {backgroundLocation && (
-        <Routes>
-          <Route element={<ProtectedOverlay />}>
-            <Route
-              path="/pedidos/novo"
-              element={
-                <Modal key={location.key} title="Novo pedido">
-                  <NewOrderPage />
-                </Modal>
-              }
-            />
-            <Route
-              path="/pedidos/:id"
-              element={
-                <Modal key={location.key} title="Detalhes do pedido">
-                  <OrderDetailsPage />
-                </Modal>
-              }
-            />
-          </Route>
-        </Routes>
-      )}
     </>
   );
 }

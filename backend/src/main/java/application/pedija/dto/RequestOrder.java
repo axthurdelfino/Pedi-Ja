@@ -1,0 +1,47 @@
+package application.pedija.dto;
+
+import java.util.List;
+
+import application.pedija.entities.enums.PaymentMethod;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+public class RequestOrder {
+
+  @NotNull
+  @Positive
+  private Long clienteId;
+
+  @NotNull
+  private PaymentMethod paymentMethod;
+
+  @NotEmpty
+  @Valid
+  private List<RequestOrderItem> items;
+
+  public Long getClienteId() {
+    return clienteId;
+  }
+
+  public void setClienteId(Long clienteId) {
+    this.clienteId = clienteId;
+  }
+
+  public PaymentMethod getPaymentMethod() {
+    return paymentMethod;
+  }
+
+  public void setPaymentMethod(PaymentMethod paymentMethod) {
+    this.paymentMethod = paymentMethod;
+  }
+
+  public List<RequestOrderItem> getItems() {
+    return items;
+  }
+
+  public void setItems(List<RequestOrderItem> items) {
+    this.items = items;
+  }
+}
