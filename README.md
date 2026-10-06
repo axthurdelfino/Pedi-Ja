@@ -63,7 +63,7 @@ O PediJa centraliza usuários, clientes, produtos, estoque e pedidos em uma API 
 
 - PostgreSQL 17.
 - Flyway.
-- Docker Compose.
+- Docker.
 
 ### Frontend
 
