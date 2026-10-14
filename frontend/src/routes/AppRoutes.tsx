@@ -43,29 +43,30 @@ export default function AppRoutes() {
           <Route path="/financeiro" element={<ReportsPage financial />} />
           <Route path="/relatorios" element={<ReportsPage />} />
         </Route>
-        {backgroundLocation && (
-          <Routes>
-            <Route element={<ProtectedOverlay />}>
-              <Route
-                path="/pedidos/novo"
-                element={
-                  <Modal key={location.key} title="Novo pedido">
-                    <NewOrderPage />
-                  </Modal>
-                }
-              />
-              <Route
-                path="/pedidos/:id"
-                element={
-                  <Modal key={location.key} title="Detalhes do pedido">
-                    <OrderDetailsPage />
-                  </Modal>
-                }
-              />
-            </Route>
-          </Routes>
-        )}
       </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route element={<ProtectedOverlay />}>
+            <Route
+              path="/pedidos/novo"
+              element={
+                <Modal key={location.key} title="Novo pedido">
+                  <NewOrderPage />
+                </Modal>
+              }
+            />
+            <Route
+              path="/pedidos/:id"
+              element={
+                <Modal key={location.key} title="Detalhes do pedido">
+                  <OrderDetailsPage />
+                </Modal>
+              }
+            />
+          </Route>
+        </Routes>
+      )}
     </>
   );
 }
