@@ -40,7 +40,6 @@ export default function AppRoutes() {
           <Route path="/pedidos/:id" element={<OrderDetailsPage />} />
           <Route path="/clientes" element={<ClientsPage />} />
           <Route path="/produtos" element={<ProductsPage />} />
-          <Route path="/financeiro" element={<ReportsPage financial />} />
           <Route path="/relatorios" element={<ReportsPage />} />
         </Route>
       </Routes>

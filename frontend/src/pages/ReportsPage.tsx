@@ -3,11 +3,7 @@ import { useReports } from "../hooks/useReports";
 import { money } from "../utils/format";
 import OrderTable from "../components/OrderTable";
 import Pagination from "../components/Pagination";
-export default function ReportsPage({
-  financial = false,
-}: {
-  financial?: boolean;
-}) {
+export default function ReportsPage() {
   const r = useReports();
   const [page, setPage] = useState(1);
   const safePage = Math.min(page, Math.max(1, Math.ceil(r.orders.length / 10)));
@@ -44,7 +40,7 @@ export default function ReportsPage({
   return (
     <div>
       <div className="page-heading">
-        <h1>{financial ? "Financeiro" : "Relatórios"}</h1>
+        <h1>Relatórios</h1>
         <button
           className="primary-button"
           disabled={r.loading || !!r.error || r.invalid}

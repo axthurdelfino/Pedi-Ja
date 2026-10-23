@@ -9,7 +9,6 @@ const navItems = [
   { to: "/pedidos", label: "Pedidos", icon: "orders" },
   { to: "/clientes", label: "Clientes", icon: "clients" },
   { to: "/produtos", label: "Produtos", icon: "products" },
-  { to: "/financeiro", label: "Financeiro", icon: "finance" },
   { to: "/relatorios", label: "Relatórios", icon: "reports" },
 ] as const;
 
