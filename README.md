@@ -73,4 +73,3 @@ O PediJa centraliza usuários, clientes, produtos, estoque e pedidos em uma API 
 - React Router.
 - Base UI Dialog.
 - Sonner.
-
