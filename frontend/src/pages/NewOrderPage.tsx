@@ -122,8 +122,8 @@ export default function NewOrderPage() {
               >
                 <option value="">Adicionar produto</option>
                 {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.nome} — {money(product.preco)}
+                  <option key={product.id} value={product.id} disabled={product.estoque < 1}>
+                    {product.nome} — {money(product.preco)}{product.estoque < 1 ? " · sem estoque" : ""}
                   </option>
                 ))}
               </select>

@@ -283,6 +283,17 @@ a {
 .primary-button:hover {
   background: #0649b6;
 }
+@media (hover: hover) and (pointer: fine) {
+  .primary-button:hover,
+  .outline-button:hover,
+  .danger-button:hover,
+  .modal-close:hover {
+    transform: translateY(-1px);
+  }
+  tbody tr:hover td {
+    background: #f8faff;
+  }
+}
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -592,6 +603,10 @@ td:first-child {
   font-weight: 600;
   color: #1d5cd1;
 }
+.outline-button:hover {
+  border-color: #a9c3f1;
+  background: #f7faff;
+}
 .inline-form-card {
   padding: 26px 28px;
   margin-bottom: 20px;
@@ -754,6 +769,20 @@ td:first-child {
   padding: 0 13px;
   color: #68758a;
   outline: 0;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+.form-grid input:hover,
+.form-grid select:hover,
+.add-line select:hover,
+.add-line input:hover {
+  border-color: #b7c9e8;
+}
+.form-grid input:focus,
+.form-grid select:focus,
+.add-line select:focus,
+.add-line input:focus {
+  border-color: #3474dc;
+  box-shadow: 0 0 0 3px #3474dc18;
 }
 .items-panel {
   padding: 24px 21px;
@@ -858,6 +887,19 @@ td:first-child {
   padding: 12px 15px;
   margin-bottom: 15px;
   font-size: 13px;
+}
+.form-error::before {
+  content: "!";
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #c32c49;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
 }
 .login-page {
   min-height: 100vh;
@@ -1039,6 +1081,25 @@ td:first-child {
   padding: 50px;
   text-align: center;
   color: #718097;
+}
+[role="status"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #718097;
+}
+[role="status"]::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 2px solid #dbe6f7;
+  border-top-color: #0759d9;
+  border-radius: 50%;
+  animation: pedija-spin 700ms linear infinite;
+}
+@keyframes pedija-spin {
+  to { transform: rotate(360deg); }
 }
 @media (max-width: 1050px) {
   .sidebar {
@@ -1382,6 +1443,9 @@ html[data-input="keyboard"]
   transition: none;
 }
 @media (prefers-reduced-motion: reduce) {
+  [role="status"]::before {
+    animation: none;
+  }
   .modal-card[data-starting-style],
   .modal-card[data-ending-style] {
     transform: none;
