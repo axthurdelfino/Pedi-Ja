@@ -9,6 +9,7 @@ import OrderDetailsPage from "../pages/OrderDetailsPage";
 import ClientsPage from "../pages/ClientsPage";
 import ProductsPage from "../pages/ProductsPage";
 import ReportsPage from "../pages/ReportsPage";
+import StockMovementsPage from "../pages/StockMovementsPage";
 import Modal from "../components/Modal";
 
 function ProtectedLayout() {
@@ -41,6 +42,7 @@ export default function AppRoutes() {
           <Route path="/clientes" element={<ClientsPage />} />
           <Route path="/produtos" element={<ProductsPage />} />
           <Route path="/relatorios" element={<ReportsPage />} />
+          <Route path="/movimentacoes-estoque" element={<StockMovementsPage />} />
         </Route>
       </Routes>
 

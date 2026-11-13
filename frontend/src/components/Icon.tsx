@@ -5,6 +5,7 @@ const paths = {
   clients:
     "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M16 4a4 4 0 0 1 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
   products: "M3 7l3-4h12l3 4v13H3z M3 7h18 M9 7v4h6V7",
+  stock: "M4 7h16v13H4z M4 11h16 M8 7V4h8v3 M8 15h3 M13 15h3",
   reports: "M4 21V11h4v10z M10 21V3h4v18z M16 21V7h4v14z",
   bag: "M4 7h16l1 14H3z M8 8V6a4 4 0 0 1 8 0v2",
   menu: "M3 6h18 M3 12h18 M3 18h18",

@@ -17,6 +17,7 @@ import application.pedija.entities.Order;
 import application.pedija.entities.OrderItem;
 import application.pedija.entities.Product;
 import application.pedija.entities.enums.OrderStatus;
+import application.pedija.entities.enums.StockMovementType;
 import application.pedija.exceptions.BusinessException;
 import application.pedija.exceptions.ResourceNotFoundException;
 import application.pedija.mappers.OrderItemMapper;
@@ -34,14 +35,17 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final OrderMapper orderMapper;
   private final OrderItemMapper orderItemMapper;
+  private final StockMovementService stockMovementService;
 
   public OrderService(ClientRepository clientRepository, ProductRepository productRepository,
-      OrderRepository orderRepository, OrderMapper orderMapper, OrderItemMapper orderItemMapper) {
+      OrderRepository orderRepository, OrderMapper orderMapper, OrderItemMapper orderItemMapper,
+      StockMovementService stockMovementService) {
     this.clientRepository = clientRepository;
     this.productRepository = productRepository;
     this.orderRepository = orderRepository;
     this.orderMapper = orderMapper;
     this.orderItemMapper = orderItemMapper;
+    this.stockMovementService = stockMovementService;
   }
 
   @Transactional
@@ -151,6 +155,11 @@ public class OrderService {
     order.setValorTotal(total);
     Order saved = orderRepository.save(order);
 
+    for (OrderItem item : saved.getItems()) {
+      stockMovementService.registerOrderMovement(item.getProduto(), StockMovementType.SAIDA, item.getQuantidade(), saved,
+          "Saída gerada pelo pedido #" + saved.getId());
+    }
+
     return convertToResponse(saved);
   }
   @Transactional
@@ -162,6 +171,8 @@ public class OrderService {
           Product product = item.getProduto();
           try { product.setEstoque(Math.addExact(product.getEstoque(), item.getQuantidade())); }
           catch (ArithmeticException e) { throw new BusinessException("Estoque excede o limite permitido"); }
+          stockMovementService.registerOrderMovement(product, StockMovementType.ENTRADA, item.getQuantidade(), order,
+              "Estorno gerado pelo cancelamento do pedido #" + order.getId());
         }
       }
       order.setOrderStatus(dto.getStatus());

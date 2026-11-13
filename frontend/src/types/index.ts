@@ -1,5 +1,6 @@
 export type OrderStatus = "PENDENTE" | "PAGO" | "ENVIADO" | "CANCELADO";
 export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
+export type StockMovementType = "ENTRADA" | "SAIDA";
 
 export interface Product {
   id: number;
@@ -43,4 +44,15 @@ export interface User {
   login: string;
   dataCriacao: string;
   role: "USER" | "ADMIN";
+}
+
+export interface StockMovement {
+  id: number;
+  produtoId: number;
+  produtoNome: string;
+  tipo: StockMovementType;
+  quantidade: number;
+  dataMovimentacao: string;
+  descricao: string | null;
+  pedidoId: number | null;
 }

@@ -606,6 +606,22 @@ td:first-child {
 .inline-form-header h2 {
   margin: 5px 0 0;
 }
+.stock-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.stock-entry { color: #168b58; }
+.stock-exit { color: #d63853; }
+.stock-submit { align-items: end; }
+.optional { color: #748098; font-weight: 400; }
+.stock-badge {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.stock-entrada { background: #e9f8ef; color: #168b58; }
+.stock-saida { background: #ffedf0; color: #d63853; }
 .eyebrow {
   color: #2868d1;
   font-size: 11px;
