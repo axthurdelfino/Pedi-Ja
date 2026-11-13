@@ -132,8 +132,12 @@ export default function NewOrderPage() {
                 type="number"
                 min="1"
                 value={quantity}
-                onFocus={(e) => e.currentTarget.select()}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onFocus={(e) => {
+                  if (e.currentTarget.value === "0") setQuantity("");
+                }}
+                onChange={(e) =>
+                  setQuantity(e.target.value === "" ? "" : Number(e.target.value))
+                }
               />
               <button type="button" className="outline-button" onClick={addProduct}>
                 ＋ Adicionar

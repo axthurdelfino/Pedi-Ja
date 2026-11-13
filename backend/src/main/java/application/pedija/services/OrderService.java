@@ -11,6 +11,8 @@ import application.pedija.dto.RequestOrder;
 import application.pedija.dto.RequestOrderItem;
 import application.pedija.dto.RequestOrderStatus;
 import application.pedija.dto.ResponseOrder;
+import application.pedija.dto.ResponsePaymentPivot;
+import application.pedija.dto.ResponseSalesByProduct;
 import application.pedija.dto.ResponseOrderItem;
 import application.pedija.entities.Client;
 import application.pedija.entities.Order;
@@ -55,6 +57,16 @@ public class OrderService {
       throw new BusinessException("Intervalo de valores inválido");
     }
     return orderRepository.search(status, clienteId, minPrice, maxPrice).stream().map(this::convertToResponse).toList();
+  }
+
+  @Transactional
+  public List<ResponseSalesByProduct> salesByProduct() {
+    return orderRepository.salesByProduct(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO));
+  }
+
+  @Transactional
+  public List<ResponsePaymentPivot> salesPivotByPayment() {
+    return orderRepository.salesPivotByPayment(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO));
   }
 
   private ResponseOrder convertToResponse(Order order) {

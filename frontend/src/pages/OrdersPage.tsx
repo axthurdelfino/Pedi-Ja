@@ -94,7 +94,7 @@ export default function OrdersPage() {
               step="1"
               value={filters.clienteId || ""}
               onFocus={(e) => {
-                if (e.currentTarget.value === "0") e.currentTarget.select();
+                if (e.currentTarget.value === "0") filter("clienteId", "");
               }}
               onChange={(e) => filter("clienteId", e.target.value)}
             />
@@ -107,7 +107,7 @@ export default function OrdersPage() {
               step=".01"
               value={filters.minPrice || ""}
               onFocus={(e) => {
-                if (e.currentTarget.value === "0") e.currentTarget.select();
+                if (e.currentTarget.value === "0") filter("minPrice", "");
               }}
               onChange={(e) => filter("minPrice", e.target.value)}
             />
@@ -120,7 +120,7 @@ export default function OrdersPage() {
               step=".01"
               value={filters.maxPrice || ""}
               onFocus={(e) => {
-                if (e.currentTarget.value === "0") e.currentTarget.select();
+                if (e.currentTarget.value === "0") filter("maxPrice", "");
               }}
               onChange={(e) => filter("maxPrice", e.target.value)}
             />

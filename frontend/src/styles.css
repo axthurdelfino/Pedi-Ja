@@ -538,6 +538,7 @@ td:first-child {
 .list-panel {
   padding: 24px 21px 14px;
 }
+.report-table { margin-top: 20px; }
 .list-toolbar {
   margin-bottom: 22px;
 }

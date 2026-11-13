@@ -56,3 +56,6 @@ export interface StockMovement {
   descricao: string | null;
   pedidoId: number | null;
 }
+
+export interface SalesByProduct { produtoId: number; produtoNome: string; quantidadeVendida: number; valorTotal: number; }
+export interface PaymentPivot { produtoId: number; produtoNome: string; pix: number; cartao: number; dinheiro: number; total: number; }

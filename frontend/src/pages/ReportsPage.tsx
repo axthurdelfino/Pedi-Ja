@@ -3,9 +3,13 @@ import { useReports } from "../hooks/useReports";
 import { money } from "../utils/format";
 import OrderTable from "../components/OrderTable";
 import Pagination from "../components/Pagination";
+import { useResource } from "../hooks/useResource";
+import { orderService } from "../services/orderService";
 export default function ReportsPage() {
   const r = useReports();
   const [page, setPage] = useState(1);
+  const grouped = useResource(orderService.salesByProduct, []);
+  const pivot = useResource(orderService.salesPivotByPayment, []);
   const safePage = Math.min(page, Math.max(1, Math.ceil(r.orders.length / 10)));
   function exportCsv() {
     const cell = (v: unknown) =>
@@ -123,6 +127,14 @@ export default function ReportsPage() {
               total={r.orders.length}
               onChange={setPage}
             />
+          </section>
+          <section className="panel list-panel report-table">
+            <div className="panel-heading"><h2>Vendas por produto</h2></div>
+            {grouped.loading ? <p role="status">Calculando vendas…</p> : <div className="table-wrap"><table><thead><tr><th>Produto</th><th className="money-cell">Quantidade vendida</th><th className="money-cell">Valor total</th></tr></thead><tbody>{grouped.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{item.quantidadeVendida}</td><td className="money-cell">{money(item.valorTotal)}</td></tr>)}</tbody></table>{!grouped.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
+          </section>
+          <section className="panel list-panel report-table">
+            <div className="panel-heading"><h2>Pivot de vendas por pagamento</h2></div>
+            {pivot.loading ? <p role="status">Calculando pivot…</p> : <div className="table-wrap"><table><thead><tr><th>Produto</th><th className="money-cell">PIX</th><th className="money-cell">Cartão</th><th className="money-cell">Dinheiro</th><th className="money-cell">Total</th></tr></thead><tbody>{pivot.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{money(item.pix)}</td><td className="money-cell">{money(item.cartao)}</td><td className="money-cell">{money(item.dinheiro)}</td><td className="money-cell">{money(item.total)}</td></tr>)}</tbody></table>{!pivot.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
           </section>
         </>
       )}

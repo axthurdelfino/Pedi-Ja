@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import application.pedija.dto.RequestOrder;
 import application.pedija.dto.RequestOrderStatus;
 import application.pedija.dto.ResponseOrder;
+import application.pedija.dto.ResponsePaymentPivot;
+import application.pedija.dto.ResponseSalesByProduct;
 import application.pedija.entities.enums.OrderStatus;
 import application.pedija.services.OrderService;
 import jakarta.validation.Valid;
@@ -38,6 +40,16 @@ public class OrderController {
       @RequestParam(required = false) java.math.BigDecimal minPrice,
       @RequestParam(required = false) java.math.BigDecimal maxPrice) {
     return ResponseEntity.ok(services.search(status, clienteId, minPrice, maxPrice));
+  }
+
+  @GetMapping("/relatorios/por-produto")
+  public ResponseEntity<List<ResponseSalesByProduct>> salesByProduct() {
+    return ResponseEntity.ok(services.salesByProduct());
+  }
+
+  @GetMapping("/relatorios/pivot-pagamentos")
+  public ResponseEntity<List<ResponsePaymentPivot>> salesPivotByPayment() {
+    return ResponseEntity.ok(services.salesPivotByPayment());
   }
 
   @GetMapping(value = "/{id}")

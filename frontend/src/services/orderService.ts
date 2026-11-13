@@ -1,5 +1,5 @@
 import { request } from "../lib/http";
-import type { Order, OrderStatus } from "../types";
+import type { Order, OrderStatus, PaymentPivot, SalesByProduct } from "../types";
 export const ordersChanged = "pedija:orders-changed";
 async function notifyChange<T>(operation: Promise<T>): Promise<T> {
   const result = await operation;
@@ -27,6 +27,8 @@ export const orderService = {
     return request<Order[]>("/pedidos?" + query.toString());
   },
   findById: (id: number) => request<Order>(`/pedidos/${id}`),
+  salesByProduct: () => request<SalesByProduct[]>("/pedidos/relatorios/por-produto"),
+  salesPivotByPayment: () => request<PaymentPivot[]>("/pedidos/relatorios/pivot-pagamentos"),
   create: (payload: CreateOrderPayload) =>
     notifyChange(
       request<Order>("/pedidos", {

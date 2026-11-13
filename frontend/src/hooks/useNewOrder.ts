@@ -22,17 +22,18 @@ export function useNewOrder() {
     { produtoId: number; quantidade: number }[]
   >([]);
   const [productId, setProductId] = useState("");
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number | "">(1);
   const [failure, setFailure] = useState("");
   const [saving, setSaving] = useState(false);
   function addProduct() {
     const p = resource.data.products.find((p) => p.id === Number(productId));
     const previous = lines.find((l) => l.produtoId === p?.id)?.quantidade || 0;
-    if (!p || !Number.isSafeInteger(quantity) || quantity < 1) {
+    const selectedQuantity = Number(quantity);
+    if (!p || !Number.isSafeInteger(selectedQuantity) || selectedQuantity < 1) {
       setFailure("Selecione um produto e uma quantidade inteira positiva.");
       return;
     }
-    if (previous + quantity > p.estoque) {
+    if (previous + selectedQuantity > p.estoque) {
       setFailure("Quantidade maior que o estoque disponível.");
       return;
     }
@@ -41,10 +42,10 @@ export function useNewOrder() {
       previous
         ? current.map((l) =>
             l.produtoId === p.id
-              ? { ...l, quantidade: l.quantidade + quantity }
+              ? { ...l, quantidade: l.quantidade + selectedQuantity }
               : l,
           )
-        : [...current, { produtoId: p.id, quantidade: quantity }],
+        : [...current, { produtoId: p.id, quantidade: selectedQuantity }],
     );
     setProductId("");
     setQuantity(1);
