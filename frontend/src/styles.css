@@ -34,13 +34,6 @@ select:focus-visible {
   margin-bottom: 20px;
 }
 @media (max-width: 900px) {
-  .app-shell.menu-open .sidebar {
-    display: flex;
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 10;
-    width: 260px;
-  }
   .app-shell.menu-open .main-area {
     margin-left: 0;
   }
@@ -432,6 +425,12 @@ a {
 }
 .table-wrap {
   overflow-x: auto;
+  scrollbar-color: #b9c8df transparent;
+  scrollbar-width: thin;
+}
+.table-wrap:focus-visible {
+  outline: 3px solid #0759d9;
+  outline-offset: 3px;
 }
 table {
   width: 100%;
@@ -901,6 +900,27 @@ td:first-child {
   font-size: 12px;
   font-weight: 800;
 }
+.error-with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.error-with-action > span {
+  min-width: 0;
+  flex: 1;
+}
+.error-with-action .outline-button {
+  flex: none;
+  padding: 8px 12px;
+}
+.field-hint {
+  color: #748098;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  margin-top: -3px;
+}
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -1231,7 +1251,21 @@ td:first-child {
 
 @media (max-width: 900px) {
   .sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 10;
+    width: 260px;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0s linear 220ms;
+  }
+  .app-shell.menu-open .sidebar {
+    transform: translateX(0);
+    visibility: visible;
+    transition-delay: 0s;
   }
   .menu-button {
     display: inline-flex;
@@ -1245,6 +1279,13 @@ td:first-child {
     z-index: 9;
     border: 0;
     background: #12213d70;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .app-shell.menu-open .menu-backdrop {
+    opacity: 1;
+    pointer-events: auto;
   }
   .modal-backdrop {
     padding: 12px;
@@ -1267,6 +1308,29 @@ td:first-child {
 }
 
 @media (max-width: 480px) {
+  .topbar {
+    gap: 10px;
+  }
+  .topbar-actions {
+    gap: 8px;
+    min-width: 0;
+  }
+  .top-user {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topbar-actions .outline-button {
+    padding-inline: 12px;
+  }
+  .error-with-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .error-with-action .outline-button {
+    align-self: flex-start;
+  }
   .modal-backdrop {
     padding: 0;
     align-items: flex-end;
@@ -1359,6 +1423,7 @@ td:first-child {
   border: 0;
   border-radius: 9px;
   padding: 12px 16px;
+  font-weight: 700;
 }
 .order-fields {
   border: 0;
@@ -1458,5 +1523,9 @@ html[data-input="keyboard"]
       .modal-close
     ):active:not(:disabled) {
     transform: none;
+  }
+  .sidebar,
+  .menu-backdrop {
+    transition: none;
   }
 }

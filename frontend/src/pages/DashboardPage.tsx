@@ -1,18 +1,11 @@
 import { Link } from "react-router-dom";
 import { useReports } from "../hooks/useReports";
-import { money, today } from "../utils/format";
+import { brazilDateKeys, money, today } from "../utils/format";
 import OrderTable from "../components/OrderTable";
+import RetryMessage from "../components/RetryMessage";
 export default function DashboardPage() {
   const r = useReports();
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - 6 + i);
-    return [
-      d.getFullYear(),
-      String(d.getMonth() + 1).padStart(2, "0"),
-      String(d.getDate()).padStart(2, "0"),
-    ].join("-");
-  });
+  const days = brazilDateKeys(7);
   const values = days.map((d) =>
     r.orders
       .filter(
@@ -32,13 +25,9 @@ export default function DashboardPage() {
     <div>
       <div className="page-heading">
         <h1>Dashboard</h1>
-        <span>{new Date().toLocaleDateString("pt-BR")}</span>
+        <span>{new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}</span>
       </div>
-      {r.error && (
-        <p role="alert" className="form-error">
-          {r.error}
-        </p>
-      )}
+      {r.error && <RetryMessage message={r.error} onRetry={() => r.reload()} />}
       {r.loading ? (
         <p role="status">Carregando…</p>
       ) : (

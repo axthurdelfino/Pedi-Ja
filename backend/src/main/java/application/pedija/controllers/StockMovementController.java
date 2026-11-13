@@ -30,7 +30,7 @@ public class StockMovementController {
       @RequestParam(required = false) StockMovementType tipo,
       @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime inicio,
       @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime fim) {
-    return ResponseEntity.ok(stockMovementService.search(produtoId, tipo, inicio, fim));
+    return ResponseEntity.ok(stockMovementService.findAll(produtoId, tipo, inicio, fim));
   }
 
   @GetMapping("/{id}")

@@ -3,6 +3,7 @@ import { useCrud } from "../hooks/useCrud";
 import Pagination from "./Pagination";
 import Dialog, { DialogCancel } from "./Dialog";
 import { useFormGuard } from "../contexts/LeaveGuardContext";
+import RetryMessage from "./RetryMessage";
 type Input = Record<string, string | number>;
 export type Field = {
   key: string;
@@ -14,6 +15,7 @@ export type Field = {
   maxLength?: number;
   pattern?: string;
   step?: string;
+  hint?: string;
 };
 export default function CrudPage<T extends { id: number }, I extends Input>({
   title,
@@ -83,9 +85,7 @@ export default function CrudPage<T extends { id: number }, I extends Input>({
         </button>
       </div>
       {crud.error && !formOpen && (
-        <p className="form-error" role="alert">
-          {crud.error}
-        </p>
+        <RetryMessage message={crud.error} onRetry={() => crud.reload()} />
       )}
       <Dialog
         title={id ? "Editar registro" : "Novo registro"}
@@ -133,6 +133,7 @@ export default function CrudPage<T extends { id: number }, I extends Input>({
                       })
                     }
                   />
+                  {f.hint && <small className="field-hint">{f.hint}</small>}
                 </label>
               ))}
             </fieldset>
@@ -168,7 +169,12 @@ export default function CrudPage<T extends { id: number }, I extends Input>({
           <p role="status">Carregando…</p>
         ) : (
           <>
-            <div className="table-wrap">
+            <div
+              className="table-wrap"
+              role="region"
+              tabIndex={0}
+              aria-label={`Tabela de ${title.toLowerCase()}`}
+            >
               <table>
                 <thead>
                   <tr>

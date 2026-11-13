@@ -1,9 +1,12 @@
 package application.pedija.controllers;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,13 +46,17 @@ public class OrderController {
   }
 
   @GetMapping("/relatorios/por-produto")
-  public ResponseEntity<List<ResponseSalesByProduct>> salesByProduct() {
-    return ResponseEntity.ok(services.salesByProduct());
+  public ResponseEntity<List<ResponseSalesByProduct>> salesByProduct(
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime inicio,
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime fim) {
+    return ResponseEntity.ok(services.salesByProduct(inicio, fim));
   }
 
   @GetMapping("/relatorios/pivot-pagamentos")
-  public ResponseEntity<List<ResponsePaymentPivot>> salesPivotByPayment() {
-    return ResponseEntity.ok(services.salesPivotByPayment());
+  public ResponseEntity<List<ResponsePaymentPivot>> salesPivotByPayment(
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime inicio,
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime fim) {
+    return ResponseEntity.ok(services.salesPivotByPayment(inicio, fim));
   }
 
   @GetMapping(value = "/{id}")

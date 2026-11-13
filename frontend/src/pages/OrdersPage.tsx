@@ -9,6 +9,7 @@ import { useResource } from "../hooks/useResource";
 import OrderTable from "../components/OrderTable";
 import Pagination from "../components/Pagination";
 import { money, today } from "../utils/format";
+import RetryMessage from "../components/RetryMessage";
 export default function OrdersPage() {
   const [filters, setFilters] = useState<OrderFilters>({});
   const [search, setSearch] = useState("");
@@ -19,6 +20,7 @@ export default function OrdersPage() {
     data: orders,
     error,
     loading,
+    reload,
   } = useResource(loader, [], ordersChanged);
   const filtered = orders.filter((o) =>
     `${o.id} ${o.clienteNome}`.toLowerCase().includes(search.toLowerCase()),
@@ -126,11 +128,7 @@ export default function OrdersPage() {
             />
           </label>
         </div>
-        {error && (
-          <p role="alert" className="form-error">
-            {error}
-          </p>
-        )}
+        {error && <RetryMessage message={error} onRetry={() => reload()} />}
         {loading ? (
           <p role="status">Carregando…</p>
         ) : (

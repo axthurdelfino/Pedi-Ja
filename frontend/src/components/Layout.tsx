@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
 import { useLeaveGuard } from "../contexts/LeaveGuardContext";
 
@@ -17,7 +17,53 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
   const { requestLeave } = useLeaveGuard();
+
+  function closeMenu() {
+    const restoreFocus = menuOpen;
+    setMenuOpen(false);
+    if (restoreFocus) menuButtonRef.current?.focus();
+  }
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const focusable = () => [
+      menuButtonRef.current,
+      ...Array.from(
+        sidebarRef.current?.querySelectorAll<HTMLElement>("a") || [],
+      ),
+    ].filter((element): element is HTMLElement => element !== null);
+
+    const firstLink = sidebarRef.current?.querySelector<HTMLElement>("a");
+    firstLink?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const elements = focusable();
+      if (elements.length === 0) return;
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
 
   function signOut() {
     requestLeave(() => {
@@ -31,11 +77,18 @@ export default function Layout() {
       {menuOpen && (
         <button
           className="menu-backdrop"
+          type="button"
+          tabIndex={-1}
           aria-label="Fechar menu"
-          onClick={() => setMenuOpen(false)}
+          onClick={closeMenu}
         />
       )}
-      <aside className="sidebar">
+      <aside
+        ref={sidebarRef}
+        className="sidebar"
+        id="main-navigation"
+        aria-label="Menu principal"
+      >
         <div className="brand">
           <span className="brand-symbol">
             <Icon name="bag" />
@@ -46,7 +99,7 @@ export default function Layout() {
           {navItems.map((item) => (
             <NavLink
               key={item.to}
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
               to={item.to}
               className={({ isActive }) =>
                 isActive ? "nav-item active" : "nav-item"
@@ -59,23 +112,16 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-        <button className="profile-card" onClick={signOut} title="Sair">
-          <span className="avatar">{user?.login[0]?.toUpperCase()}</span>
-          <span>
-            <strong>{user?.login}</strong>
-            <small>
-              {user?.roles.includes("ROLE_ADMIN") ? "Administrador" : "Usuário"}
-            </small>
-          </span>
-          <span className="chevron">⌄</span>
-        </button>
       </aside>
       <main className="main-area">
         <header className="topbar">
           <button
+            ref={menuButtonRef}
             className="menu-button"
-            aria-label="Abrir menu"
+            type="button"
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuOpen}
+            aria-controls="main-navigation"
             onClick={() => setMenuOpen((v) => !v)}
           >
             <Icon name="menu" />

@@ -123,7 +123,7 @@ export default function NewOrderPage() {
                 <option value="">Adicionar produto</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id} disabled={product.estoque < 1}>
-                    {product.nome} — {money(product.preco)}{product.estoque < 1 ? " · sem estoque" : ""}
+                    {product.nome} — {money(product.preco)}{product.estoque < 1 ? " · sem estoque" : ` · estoque: ${product.estoque}`}
                   </option>
                 ))}
               </select>
@@ -131,6 +131,8 @@ export default function NewOrderPage() {
                 aria-label="Quantidade"
                 type="number"
                 min="1"
+                step="1"
+                inputMode="numeric"
                 value={quantity}
                 onFocus={(e) => {
                   if (e.currentTarget.value === "0") setQuantity("");
@@ -144,7 +146,12 @@ export default function NewOrderPage() {
               </button>
             </div>
           </div>
-          <div className="table-wrap">
+          <div
+            className="table-wrap"
+            role="region"
+            tabIndex={0}
+            aria-label="Itens adicionados ao pedido"
+          >
             <table>
               <thead>
                 <tr>

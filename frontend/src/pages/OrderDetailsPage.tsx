@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { orderService } from "../services/orderService";
 import { errorMessage, useResource } from "../hooks/useResource";
 import type { Order, OrderStatus } from "../types";
 import { dateTime, money } from "../utils/format";
 import StatusBadge from "../components/StatusBadge";
-import { useFormGuard, useLeaveGuard } from "../contexts/LeaveGuardContext";
+import { useFormGuard } from "../contexts/LeaveGuardContext";
 import { toast } from "sonner";
 const transitions: Record<OrderStatus, OrderStatus[]> = {
   PENDENTE: ["PAGO", "CANCELADO"],
@@ -15,7 +15,6 @@ const transitions: Record<OrderStatus, OrderStatus[]> = {
 };
 export default function OrderDetailsPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const loader = useCallback(() => orderService.findById(Number(id)), [id]);
   const {
     data: order,
@@ -25,7 +24,6 @@ export default function OrderDetailsPage() {
   } = useResource<Order | null>(loader, null);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState("");
-  const { complete } = useLeaveGuard();
   useFormGuard({ dirty: false, busy });
   async function update(status: OrderStatus) {
     if (!order || !window.confirm(`Alterar pedido para ${status}?`)) return;
@@ -35,26 +33,6 @@ export default function OrderDetailsPage() {
       await orderService.updateStatus(order.id, status);
       await reload(true);
       toast.success("Status do pedido atualizado.");
-    } catch (e) {
-      setFailure(errorMessage(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function remove() {
-    if (
-      !order ||
-      !window.confirm(
-        "Excluir este pedido cancelado? Esta ação não pode ser desfeita.",
-      )
-    )
-      return;
-    setBusy(true);
-    setFailure("");
-    try {
-      await orderService.remove(order.id);
-      toast.success("Pedido excluído.");
-      complete(() => navigate("/pedidos"));
     } catch (e) {
       setFailure(errorMessage(e));
     } finally {
@@ -86,7 +64,8 @@ export default function OrderDetailsPage() {
               <div className="heading-actions">
                 {transitions[order.status].map((s) => (
                   <button
-                    className="outline-button"
+                    type="button"
+                    className={s === "CANCELADO" ? "danger-button" : "outline-button"}
                     key={s}
                     disabled={busy}
                     onClick={() => void update(s)}
@@ -98,15 +77,15 @@ export default function OrderDetailsPage() {
                         : "Cancelar pedido"}
                   </button>
                 ))}
-                {order.status === "CANCELADO" && (
-                  <button disabled={busy} onClick={() => void remove()}>
-                    Excluir pedido
-                  </button>
-                )}
               </div>
             </section>
             <section className="panel list-panel">
-              <div className="table-wrap">
+              <div
+                className="table-wrap"
+                role="region"
+                tabIndex={0}
+                aria-label="Itens do pedido"
+              >
                 <table>
                   <thead>
                     <tr>

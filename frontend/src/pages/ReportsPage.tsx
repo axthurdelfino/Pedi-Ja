@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useReports } from "../hooks/useReports";
 import { money } from "../utils/format";
 import OrderTable from "../components/OrderTable";
 import Pagination from "../components/Pagination";
 import { useResource } from "../hooks/useResource";
-import { orderService } from "../services/orderService";
+import { orderService, ordersChanged } from "../services/orderService";
+import RetryMessage from "../components/RetryMessage";
 export default function ReportsPage() {
   const r = useReports();
   const [page, setPage] = useState(1);
-  const grouped = useResource(orderService.salesByProduct, []);
-  const pivot = useResource(orderService.salesPivotByPayment, []);
+  const reportFilters = { inicio: r.start, fim: r.end };
+  const groupedLoader = useCallback(
+    () => orderService.salesByProduct(reportFilters),
+    [r.start, r.end],
+  );
+  const pivotLoader = useCallback(
+    () => orderService.salesPivotByPayment(reportFilters),
+    [r.start, r.end],
+  );
+  const grouped = useResource(groupedLoader, [], ordersChanged);
+  const pivot = useResource(pivotLoader, [], ordersChanged);
   const safePage = Math.min(page, Math.max(1, Math.ceil(r.orders.length / 10)));
   function exportCsv() {
     const cell = (v: unknown) =>
@@ -50,7 +60,7 @@ export default function ReportsPage() {
           disabled={r.loading || !!r.error || r.invalid}
           onClick={exportCsv}
         >
-          Exportar CSV
+          Exportar pedidos CSV
         </button>
       </div>
       <p>
@@ -83,11 +93,21 @@ export default function ReportsPage() {
           </label>
         </div>
       </section>
-      {(r.error || r.invalid) && (
-        <p role="alert" className="form-error">
-          {r.error || "O início deve ser anterior ao fim do período."}
-        </p>
-      )}
+      {(r.error || r.invalid || grouped.error || pivot.error) &&
+        (r.invalid ? (
+          <p role="alert" className="form-error">
+            O início deve ser anterior ao fim do período.
+          </p>
+        ) : (
+          <RetryMessage
+            message={r.error || grouped.error || pivot.error || "Erro ao carregar relatórios."}
+            onRetry={() => {
+              if (r.error) void r.reload();
+              if (grouped.error) void grouped.reload();
+              if (pivot.error) void pivot.reload();
+            }}
+          />
+        ))}
       {r.loading ? (
         <p role="status">Carregando…</p>
       ) : (
@@ -130,11 +150,11 @@ export default function ReportsPage() {
           </section>
           <section className="panel list-panel report-table">
             <div className="panel-heading"><h2>Vendas por produto</h2></div>
-            {grouped.loading ? <p role="status">Calculando vendas…</p> : <div className="table-wrap"><table><thead><tr><th>Produto</th><th className="money-cell">Quantidade vendida</th><th className="money-cell">Valor total</th></tr></thead><tbody>{grouped.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{item.quantidadeVendida}</td><td className="money-cell">{money(item.valorTotal)}</td></tr>)}</tbody></table>{!grouped.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
+            {grouped.loading ? <p role="status">Calculando vendas…</p> : grouped.error ? <p className="empty-state">Não foi possível carregar este relatório.</p> : <div className="table-wrap" role="region" tabIndex={0} aria-label="Vendas por produto"><table><thead><tr><th>Produto</th><th className="money-cell">Quantidade vendida</th><th className="money-cell">Valor total</th></tr></thead><tbody>{grouped.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{item.quantidadeVendida}</td><td className="money-cell">{money(item.valorTotal)}</td></tr>)}</tbody></table>{!grouped.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
           </section>
           <section className="panel list-panel report-table">
             <div className="panel-heading"><h2>Pivot de vendas por pagamento</h2></div>
-            {pivot.loading ? <p role="status">Calculando pivot…</p> : <div className="table-wrap"><table><thead><tr><th>Produto</th><th className="money-cell">PIX</th><th className="money-cell">Cartão</th><th className="money-cell">Dinheiro</th><th className="money-cell">Total</th></tr></thead><tbody>{pivot.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{money(item.pix)}</td><td className="money-cell">{money(item.cartao)}</td><td className="money-cell">{money(item.dinheiro)}</td><td className="money-cell">{money(item.total)}</td></tr>)}</tbody></table>{!pivot.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
+            {pivot.loading ? <p role="status">Calculando pivot…</p> : pivot.error ? <p className="empty-state">Não foi possível carregar este relatório.</p> : <div className="table-wrap" role="region" tabIndex={0} aria-label="Vendas por forma de pagamento"><table><thead><tr><th>Produto</th><th className="money-cell">PIX</th><th className="money-cell">Cartão</th><th className="money-cell">Dinheiro</th><th className="money-cell">Total</th></tr></thead><tbody>{pivot.data.map((item) => <tr key={item.produtoId}><td>{item.produtoNome}</td><td className="money-cell">{money(item.pix)}</td><td className="money-cell">{money(item.cartao)}</td><td className="money-cell">{money(item.dinheiro)}</td><td className="money-cell">{money(item.total)}</td></tr>)}</tbody></table>{!pivot.data.length && <p className="empty-state">Nenhuma venda paga encontrada.</p>}</div>}
           </section>
         </>
       )}

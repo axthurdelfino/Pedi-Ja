@@ -1,6 +1,7 @@
 package application.pedija.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +61,21 @@ public class OrderService {
   }
 
   @Transactional
-  public List<ResponseSalesByProduct> salesByProduct() {
-    return orderRepository.salesByProduct(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO));
+  public List<ResponseSalesByProduct> salesByProduct(LocalDateTime inicio, LocalDateTime fim) {
+    validatePeriod(inicio, fim);
+    return orderRepository.salesByProduct(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO), inicio, fim);
   }
 
   @Transactional
-  public List<ResponsePaymentPivot> salesPivotByPayment() {
-    return orderRepository.salesPivotByPayment(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO));
+  public List<ResponsePaymentPivot> salesPivotByPayment(LocalDateTime inicio, LocalDateTime fim) {
+    validatePeriod(inicio, fim);
+    return orderRepository.salesPivotByPayment(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO), inicio, fim);
+  }
+
+  private void validatePeriod(LocalDateTime inicio, LocalDateTime fim) {
+    if (inicio != null && fim != null && inicio.isAfter(fim)) {
+      throw new BusinessException("Período inválido");
+    }
   }
 
   private ResponseOrder convertToResponse(Order order) {
@@ -112,10 +121,11 @@ public class OrderService {
 
     return convertToResponse(order);
   }
+
   @Transactional
   public void delete(Long id) {
-    Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order", id));
-
+    Order order = orderRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Order", id));
     if (order.getOrderStatus() != OrderStatus.CANCELADO) {
       throw new BusinessException("Cancele o pedido antes de excluir. Pedidos pagos ou enviados devem ser preservados.");
     }

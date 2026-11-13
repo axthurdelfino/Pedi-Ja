@@ -13,16 +13,22 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
   @Query("select new application.pedija.dto.ResponseSalesByProduct(i.produto.id, i.produto.nome, sum(i.quantidade), "
       + "sum(i.quantidade * i.precoUnitario)) from OrderItem i where i.pedido.orderStatus in :statuses "
+      + "and (:inicio is null or i.pedido.dataPedido >= :inicio) "
+      + "and (:fim is null or i.pedido.dataPedido <= :fim) "
       + "group by i.produto.id, i.produto.nome order by sum(i.quantidade * i.precoUnitario) desc")
-  List<ResponseSalesByProduct> salesByProduct(@Param("statuses") List<OrderStatus> statuses);
+  List<ResponseSalesByProduct> salesByProduct(@Param("statuses") List<OrderStatus> statuses,
+      @Param("inicio") java.time.LocalDateTime inicio, @Param("fim") java.time.LocalDateTime fim);
 
   @Query("select new application.pedija.dto.ResponsePaymentPivot(i.produto.id, i.produto.nome, "
       + "sum(case when i.pedido.paymentMethod = application.pedija.entities.enums.PaymentMethod.PIX then i.quantidade * i.precoUnitario else 0 end), "
       + "sum(case when i.pedido.paymentMethod = application.pedija.entities.enums.PaymentMethod.CARTAO then i.quantidade * i.precoUnitario else 0 end), "
       + "sum(case when i.pedido.paymentMethod = application.pedija.entities.enums.PaymentMethod.DINHEIRO then i.quantidade * i.precoUnitario else 0 end), "
       + "sum(i.quantidade * i.precoUnitario)) from OrderItem i where i.pedido.orderStatus in :statuses "
+      + "and (:inicio is null or i.pedido.dataPedido >= :inicio) "
+      + "and (:fim is null or i.pedido.dataPedido <= :fim) "
       + "group by i.produto.id, i.produto.nome order by i.produto.nome")
-  List<ResponsePaymentPivot> salesPivotByPayment(@Param("statuses") List<OrderStatus> statuses);
+  List<ResponsePaymentPivot> salesPivotByPayment(@Param("statuses") List<OrderStatus> statuses,
+      @Param("inicio") java.time.LocalDateTime inicio, @Param("fim") java.time.LocalDateTime fim);
   @Query("select o from Order o where (:status is null or o.orderStatus = :status) "
       + "and (:clienteId is null or o.client.id = :clienteId) "
       + "and (:minPrice is null or o.valorTotal >= :minPrice) "

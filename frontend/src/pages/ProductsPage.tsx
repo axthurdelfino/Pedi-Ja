@@ -22,6 +22,7 @@ export default function ProductsPage() {
         {
           key: "estoque",
           label: "Estoque",
+          hint: "Alterações no estoque geram histórico automático.",
           type: "number",
           min: 0,
           max: 2147483647,

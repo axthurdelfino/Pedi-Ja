@@ -5,7 +5,12 @@ import StatusBadge from "./StatusBadge";
 export default function OrderTable({ orders }: { orders: Order[] }) {
   const location = useLocation();
   return (
-    <div className="table-wrap">
+    <div
+      className="table-wrap"
+      role="region"
+      tabIndex={0}
+      aria-label="Tabela de pedidos"
+    >
       <table>
         <thead>
           <tr>
