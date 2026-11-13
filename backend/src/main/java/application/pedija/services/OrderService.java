@@ -33,6 +33,10 @@ import jakarta.transaction.Transactional;
 @Service
 public class OrderService {
 
+  private static final LocalDateTime MIN_REPORT_DATE = LocalDateTime.of(1, 1, 1, 0, 0);
+  private static final LocalDateTime MAX_REPORT_DATE =
+      LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_999_999);
+
   private final ClientRepository clientRepository;
   private final ProductRepository productRepository;
   private final OrderRepository orderRepository;
@@ -63,13 +67,19 @@ public class OrderService {
   @Transactional
   public List<ResponseSalesByProduct> salesByProduct(LocalDateTime inicio, LocalDateTime fim) {
     validatePeriod(inicio, fim);
-    return orderRepository.salesByProduct(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO), inicio, fim);
+    return orderRepository.salesByProduct(
+        List.of(OrderStatus.PAGO, OrderStatus.ENVIADO),
+        inicio != null ? inicio : MIN_REPORT_DATE,
+        fim != null ? fim : MAX_REPORT_DATE);
   }
 
   @Transactional
   public List<ResponsePaymentPivot> salesPivotByPayment(LocalDateTime inicio, LocalDateTime fim) {
     validatePeriod(inicio, fim);
-    return orderRepository.salesPivotByPayment(List.of(OrderStatus.PAGO, OrderStatus.ENVIADO), inicio, fim);
+    return orderRepository.salesPivotByPayment(
+        List.of(OrderStatus.PAGO, OrderStatus.ENVIADO),
+        inicio != null ? inicio : MIN_REPORT_DATE,
+        fim != null ? fim : MAX_REPORT_DATE);
   }
 
   private void validatePeriod(LocalDateTime inicio, LocalDateTime fim) {
