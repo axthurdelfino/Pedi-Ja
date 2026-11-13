@@ -109,14 +109,6 @@ export default function NewOrderPage() {
                 <option value="DINHEIRO">Dinheiro</option>
               </select>
             </label>
-            <label>
-              Status
-              <input value="Pendente" disabled />
-            </label>
-            <label>
-              Data do pedido
-              <input value={new Date().toLocaleDateString("pt-BR")} disabled />
-            </label>
           </div>
         </section>
         <section className="panel items-panel">
@@ -140,13 +132,10 @@ export default function NewOrderPage() {
                 type="number"
                 min="1"
                 value={quantity}
+                onFocus={(e) => e.currentTarget.select()}
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
-              <button
-                type="button"
-                className="outline-button"
-                onClick={addProduct}
-              >
+              <button type="button" className="outline-button" onClick={addProduct}>
                 ＋ Adicionar
               </button>
             </div>

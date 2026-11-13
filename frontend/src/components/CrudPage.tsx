@@ -118,6 +118,11 @@ export default function CrudPage<T extends { id: number }, I extends Input>({
                     pattern={f.pattern}
                     step={f.step}
                     value={form[f.key]}
+                    onFocus={(e) => {
+                      if (f.type === "number" && e.currentTarget.value === "0") {
+                        e.currentTarget.select();
+                      }
+                    }}
                     onChange={(e) =>
                       setForm({
                         ...form,

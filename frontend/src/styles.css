@@ -767,16 +767,21 @@ td:first-child {
   width: 100%;
 }
 .add-line {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 70px max-content;
+  align-items: center;
   max-width: 100%;
   gap: 8px;
 }
 .add-line select {
-  width: 240px;
+  width: 100%;
 }
 .add-line input {
-  width: 70px;
+  width: 100%;
+}
+.add-line button {
+  height: 43px;
+  white-space: nowrap;
 }
 .items-panel .table-wrap {
   margin-top: 21px;
@@ -1108,10 +1113,10 @@ td:first-child {
   }
   .add-line {
     width: 100%;
-    flex-wrap: wrap;
+    grid-template-columns: minmax(0, 1fr) 70px max-content;
   }
   .add-line select {
-    flex: 1;
+    width: 100%;
   }
   .login-page {
     display: block;
