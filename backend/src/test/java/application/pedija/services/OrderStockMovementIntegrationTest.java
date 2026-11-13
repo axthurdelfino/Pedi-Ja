@@ -54,7 +54,7 @@ class OrderStockMovementIntegrationTest {
     service.insert(orderRequest(4L, 1, 2));
 
     assertEquals(7, product.getEstoque());
-    verify(stockMovementService).registerOrderMovement(eq(product), eq(StockMovementType.SAIDA), eq(3), any(Order.class),
+    verify(stockMovementService).recordExistingStockChange(eq(product), eq(StockMovementType.SAIDA), eq(3), any(Order.class),
         eq("Saída gerada pelo pedido #15"));
   }
 
@@ -77,7 +77,7 @@ class OrderStockMovementIntegrationTest {
     service().updatedOrder(15L, request);
 
     assertEquals(5, product.getEstoque());
-    verify(stockMovementService).registerOrderMovement(product, StockMovementType.ENTRADA, 2, order,
+    verify(stockMovementService).recordExistingStockChange(product, StockMovementType.ENTRADA, 2, order,
         "Estorno gerado pelo cancelamento do pedido #15");
   }
 

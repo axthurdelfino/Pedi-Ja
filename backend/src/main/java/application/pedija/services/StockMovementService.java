@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import application.pedija.dto.RequestStockMovement;
 import application.pedija.dto.ResponseStockMovement;
 import application.pedija.entities.Order;
 import application.pedija.entities.Product;
@@ -31,18 +30,8 @@ public class StockMovementService {
     this.stockMovementMapper = stockMovementMapper;
   }
 
-  @Transactional
-  public ResponseStockMovement register(RequestStockMovement request) {
-    validateQuantity(request.getQuantidade());
-    Product product = productRepository.findById(request.getProdutoId())
-        .orElseThrow(() -> new ResourceNotFoundException("Product", request.getProdutoId()));
-    applyStockChange(product, request.getTipo(), request.getQuantidade());
-    StockMovement movement = createMovement(product, request.getTipo(), request.getQuantidade(), request.getDescricao(), null);
-    return stockMovementMapper.toResponse(stockMovementRepository.save(movement));
-  }
-
-  /** Records stock already changed by the order workflow; it never changes the product stock. */
-  public void registerOrderMovement(Product product, StockMovementType type, Integer quantity, Order order, String description) {
+  /** Records a stock change already made by its calling business workflow. */
+  public void recordExistingStockChange(Product product, StockMovementType type, Integer quantity, Order order, String description) {
     validateQuantity(quantity);
     stockMovementRepository.save(createMovement(product, type, quantity, description, order));
   }
@@ -68,17 +57,6 @@ public class StockMovementService {
     movement.setDescricao(description == null || description.isBlank() ? null : description.trim());
     movement.setPedido(order);
     return movement;
-  }
-
-  private void applyStockChange(Product product, StockMovementType type, Integer quantity) {
-    if (type == null) throw new BusinessException("Tipo de movimentação é obrigatório");
-    if (type == StockMovementType.SAIDA) {
-      if (product.getEstoque() < quantity) throw new BusinessException("Estoque insuficiente");
-      product.setEstoque(product.getEstoque() - quantity);
-    } else {
-      try { product.setEstoque(Math.addExact(product.getEstoque(), quantity)); }
-      catch (ArithmeticException e) { throw new BusinessException("Estoque excede o limite permitido"); }
-    }
   }
 
   private void validateQuantity(Integer quantity) {

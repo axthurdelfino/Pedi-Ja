@@ -156,7 +156,7 @@ public class OrderService {
     Order saved = orderRepository.save(order);
 
     for (OrderItem item : saved.getItems()) {
-      stockMovementService.registerOrderMovement(item.getProduto(), StockMovementType.SAIDA, item.getQuantidade(), saved,
+      stockMovementService.recordExistingStockChange(item.getProduto(), StockMovementType.SAIDA, item.getQuantidade(), saved,
           "Saída gerada pelo pedido #" + saved.getId());
     }
 
@@ -171,7 +171,7 @@ public class OrderService {
           Product product = item.getProduto();
           try { product.setEstoque(Math.addExact(product.getEstoque(), item.getQuantidade())); }
           catch (ArithmeticException e) { throw new BusinessException("Estoque excede o limite permitido"); }
-          stockMovementService.registerOrderMovement(product, StockMovementType.ENTRADA, item.getQuantidade(), order,
+          stockMovementService.recordExistingStockChange(product, StockMovementType.ENTRADA, item.getQuantidade(), order,
               "Estorno gerado pelo cancelamento do pedido #" + order.getId());
         }
       }

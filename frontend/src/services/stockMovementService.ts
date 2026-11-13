@@ -10,13 +10,6 @@ export type StockMovementFilters = {
   fim?: string;
 };
 
-export type StockMovementInput = {
-  produtoId: number;
-  tipo: StockMovementType;
-  quantidade: number;
-  descricao?: string;
-};
-
 export const stockMovementService = {
   findAll: (filters: StockMovementFilters = {}) => {
     const query = new URLSearchParams();
@@ -26,13 +19,5 @@ export const stockMovementService = {
     if (filters.fim) query.set("fim", `${filters.fim}T23:59:59.999`);
     const suffix = query.size ? `?${query.toString()}` : "";
     return request<StockMovement[]>(`/stock-movements${suffix}`);
-  },
-  create: async (input: StockMovementInput) => {
-    const movement = await request<StockMovement>("/stock-movements", {
-      method: "POST",
-      body: JSON.stringify(input),
-    });
-    window.dispatchEvent(new Event(stockMovementsChanged));
-    return movement;
   },
 };
