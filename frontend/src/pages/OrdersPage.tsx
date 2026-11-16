@@ -135,6 +135,7 @@ export default function OrdersPage() {
           <>
             <OrderTable
               orders={filtered.slice((safePage - 1) * 10, safePage * 10)}
+              showShareActions
             />
             <Pagination
               page={safePage}

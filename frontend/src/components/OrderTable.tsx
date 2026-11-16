@@ -2,7 +2,14 @@ import { Link, useLocation } from "react-router-dom";
 import type { Order } from "../types";
 import { dateTime, money } from "../utils/format";
 import StatusBadge from "./StatusBadge";
-export default function OrderTable({ orders }: { orders: Order[] }) {
+import ShareOrderButtons from "./ShareOrderButtons";
+export default function OrderTable({
+  orders,
+  showShareActions = false,
+}: {
+  orders: Order[];
+  showShareActions?: boolean;
+}) {
   const location = useLocation();
   return (
     <div
@@ -37,13 +44,16 @@ export default function OrderTable({ orders }: { orders: Order[] }) {
               </td>
               <td>{o.paymentMethod}</td>
               <td>
-                <Link
-                  className="outline-button"
-                  state={{ backgroundLocation: location }}
-                  to={`/pedidos/${o.id}`}
-                >
-                  Ver pedido
-                </Link>
+                <div className="order-actions">
+                  <Link
+                    className="outline-button"
+                    state={{ backgroundLocation: location }}
+                    to={`/pedidos/${o.id}`}
+                  >
+                    Ver pedido
+                  </Link>
+                  {showShareActions && <ShareOrderButtons pedido={o} />}
+                </div>
               </td>
             </tr>
           ))}

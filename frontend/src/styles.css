@@ -437,6 +437,25 @@ table {
   border-collapse: collapse;
   min-width: 760px;
 }
+.order-actions {
+  display: grid;
+  gap: 8px;
+  min-width: 250px;
+}
+.order-share-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.share-button {
+  padding: 8px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.share-whatsapp {
+  color: #138a56;
+}
 th {
   text-align: left;
   color: #53617a;
