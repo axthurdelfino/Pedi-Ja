@@ -442,17 +442,14 @@ table {
   gap: 8px;
   min-width: 220px;
 }
-.order-share-actions {
+.order-invoice-actions {
   display: block;
 }
-.share-button {
+.invoice-button {
   width: 100%;
   padding: 8px 10px;
   font-size: 12px;
   line-height: 1.25;
-}
-.share-whatsapp {
-  color: #138a56;
 }
 th {
   text-align: left;

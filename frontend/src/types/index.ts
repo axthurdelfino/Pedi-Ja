@@ -32,7 +32,6 @@ export interface Order {
   id: number;
   clienteId: number;
   clienteNome: string;
-  clienteTelefone: string;
   dataPedido: string;
   status: OrderStatus;
   paymentMethod: PaymentMethod;

@@ -25,7 +25,6 @@ public class OrderMapper {
     response.setId(order.getId());
     response.setClienteId(order.getClient().getId());
     response.setClienteNome(order.getClient().getNome());
-    response.setClienteTelefone(order.getClient().getTelefone());
     response.setDataPedido(order.getDataPedido());
     response.setStatus(order.getOrderStatus());
     response.setPaymentMethod(order.getPaymentMethod());

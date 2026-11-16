@@ -2,13 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import type { Order } from "../types";
 import { dateTime, money } from "../utils/format";
 import StatusBadge from "./StatusBadge";
-import ShareOrderButtons from "./ShareOrderButtons";
+import InvoiceButton from "./InvoiceButton";
 export default function OrderTable({
   orders,
-  showShareActions = false,
+  showInvoiceAction = false,
 }: {
   orders: Order[];
-  showShareActions?: boolean;
+  showInvoiceAction?: boolean;
 }) {
   const location = useLocation();
   return (
@@ -52,7 +52,7 @@ export default function OrderTable({
                   >
                     Ver pedido
                   </Link>
-                  {showShareActions && <ShareOrderButtons pedido={o} />}
+                  {showInvoiceAction && <InvoiceButton pedido={o} />}
                 </div>
               </td>
             </tr>

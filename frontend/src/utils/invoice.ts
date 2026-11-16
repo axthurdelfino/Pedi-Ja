@@ -15,38 +15,11 @@ const paymentLabel: Record<PaymentMethod, string> = {
   DINHEIRO: "Dinheiro",
 };
 
-export function orderFileName(order: Order) {
+export function invoiceFileName(order: Order) {
   return `pedido-${order.id}.pdf`;
 }
 
-export function orderShareText(order: Order) {
-  const items = order.items.length
-    ? order.items.map(
-        (item) =>
-          `• ${item.quantidade}x ${item.produtoNome} — ${money(item.subtotal)}`,
-      )
-    : ["• Nenhum item informado"];
-
-  return [
-    `*PediJá — Pedido #${order.id}*`,
-    `Cliente: ${order.clienteNome || `Cliente #${order.clienteId}`}`,
-    `Data: ${dateTime(order.dataPedido)}`,
-    `Status: ${statusLabel[order.status]}`,
-    `Pagamento: ${paymentLabel[order.paymentMethod]}`,
-    "",
-    "*Itens:*",
-    ...items,
-    "",
-    `*Total: ${money(order.valorTotal)}*`,
-  ].join("\n");
-}
-
-function phoneDigits(phone?: string) {
-  const digits = phone?.replace(/\D/g, "") || "";
-  return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
-}
-
-export function gerarPdfPedido(order: Order) {
+export function gerarInvoicePdf(order: Order) {
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -71,7 +44,7 @@ export function gerarPdfPedido(order: Order) {
   };
 
   pdf.setTextColor(24, 35, 61);
-  writeWrapped(`PediJá — Pedido #${order.id}`, 20, true);
+  writeWrapped(`PediJá — Invoice do pedido #${order.id}`, 20, true);
   pdf.setDrawColor(220, 227, 238);
   pdf.line(margin, y, pageWidth - margin, y);
   y += 9;
@@ -119,30 +92,6 @@ export function gerarPdfPedido(order: Order) {
   return pdf;
 }
 
-export function baixarPdfPedido(order: Order) {
-  gerarPdfPedido(order).save(orderFileName(order));
-}
-
-export async function enviarPdfWhatsApp(order: Order) {
-  const blob = gerarPdfPedido(order).output("blob");
-  const file = new File([blob], orderFileName(order), { type: "application/pdf" });
-
-  if (navigator.share && navigator.canShare?.({ files: [file] })) {
-    await navigator.share({
-      title: `Pedido #${order.id}`,
-      text: orderShareText(order),
-      files: [file],
-    });
-    return "shared" as const;
-  }
-
-  baixarPdfPedido(order);
-  const recipient = phoneDigits(order.clienteTelefone);
-  const target = recipient ? `https://wa.me/${recipient}` : "https://wa.me/";
-  window.open(
-    `${target}?text=${encodeURIComponent(orderShareText(order))}`,
-    "_blank",
-    "noopener,noreferrer",
-  );
-  return "downloaded" as const;
+export function baixarInvoicePdf(order: Order) {
+  gerarInvoicePdf(order).save(invoiceFileName(order));
 }

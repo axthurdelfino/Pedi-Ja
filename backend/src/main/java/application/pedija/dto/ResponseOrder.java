@@ -12,11 +12,8 @@ public class ResponseOrder {
   private Long id;
   private Long clienteId;
   private String clienteNome;
-  private String clienteTelefone;
   public String getClienteNome() { return clienteNome; }
   public void setClienteNome(String clienteNome) { this.clienteNome = clienteNome; }
-  public String getClienteTelefone() { return clienteTelefone; }
-  public void setClienteTelefone(String clienteTelefone) { this.clienteTelefone = clienteTelefone; }
   private LocalDateTime dataPedido;
   private OrderStatus status;
   private PaymentMethod paymentMethod;
