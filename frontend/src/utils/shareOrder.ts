@@ -46,13 +46,6 @@ function phoneDigits(phone?: string) {
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
 
-export function compartilharNoWhatsApp(order: Order, phone?: string) {
-  const recipient = phoneDigits(phone);
-  const target = recipient ? `https://wa.me/${recipient}` : "https://wa.me/";
-  const url = `${target}?text=${encodeURIComponent(orderShareText(order))}`;
-  window.open(url, "_blank", "noopener,noreferrer");
-}
-
 export function gerarPdfPedido(order: Order) {
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -130,18 +123,26 @@ export function baixarPdfPedido(order: Order) {
   gerarPdfPedido(order).save(orderFileName(order));
 }
 
-export async function compartilharPdfPedido(order: Order) {
+export async function enviarPdfWhatsApp(order: Order) {
   const blob = gerarPdfPedido(order).output("blob");
   const file = new File([blob], orderFileName(order), { type: "application/pdf" });
 
   if (navigator.share && navigator.canShare?.({ files: [file] })) {
     await navigator.share({
       title: `Pedido #${order.id}`,
-      text: `Pedido #${order.id} — ${order.clienteNome || `Cliente #${order.clienteId}`}`,
+      text: orderShareText(order),
       files: [file],
     });
-    return;
+    return "shared" as const;
   }
 
   baixarPdfPedido(order);
+  const recipient = phoneDigits(order.clienteTelefone);
+  const target = recipient ? `https://wa.me/${recipient}` : "https://wa.me/";
+  window.open(
+    `${target}?text=${encodeURIComponent(orderShareText(order))}`,
+    "_blank",
+    "noopener,noreferrer",
+  );
+  return "downloaded" as const;
 }

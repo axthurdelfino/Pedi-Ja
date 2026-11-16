@@ -1,32 +1,24 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import type { Order } from "../types";
-import {
-  baixarPdfPedido,
-  compartilharNoWhatsApp,
-  compartilharPdfPedido,
-} from "../utils/shareOrder";
-
-type Action = "whatsapp" | "share" | "download" | null;
+import { enviarPdfWhatsApp } from "../utils/shareOrder";
 
 export default function ShareOrderButtons({ pedido }: { pedido: Order }) {
-  const [busy, setBusy] = useState<Action>(null);
+  const [busy, setBusy] = useState(false);
 
-  function run(action: Exclude<Action, null>, operation: () => void | Promise<void>) {
-    setBusy(action);
-    const handleError = (error: unknown) => {
-      if (error instanceof DOMException && error.name === "AbortError") return;
-      toast.error("Não foi possível compartilhar o pedido.");
-    };
-
-    try {
-      Promise.resolve(operation())
-        .catch(handleError)
-        .finally(() => setBusy(null));
-    } catch (error) {
-      handleError(error);
-      setBusy(null);
-    }
+  function share() {
+    setBusy(true);
+    enviarPdfWhatsApp(pedido)
+      .then((result) => {
+        if (result === "downloaded") {
+          toast.success("PDF baixado. O WhatsApp foi aberto para o cliente.");
+        }
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        toast.error("Não foi possível compartilhar o PDF do pedido.");
+      })
+      .finally(() => setBusy(false));
   }
 
   return (
@@ -34,29 +26,11 @@ export default function ShareOrderButtons({ pedido }: { pedido: Order }) {
       <button
         type="button"
         className="outline-button share-button share-whatsapp"
-        disabled={busy !== null}
-        title="Enviar resumo pelo WhatsApp"
-        onClick={() => run("whatsapp", () => compartilharNoWhatsApp(pedido, pedido.clienteTelefone))}
+        disabled={busy}
+        title="Enviar o PDF do pedido pelo WhatsApp"
+        onClick={share}
       >
-        {busy === "whatsapp" ? "Abrindo…" : "WhatsApp"}
-      </button>
-      <button
-        type="button"
-        className="outline-button share-button"
-        disabled={busy !== null}
-        title="Compartilhar o PDF do pedido"
-        onClick={() => run("share", () => compartilharPdfPedido(pedido))}
-      >
-        {busy === "share" ? "Gerando…" : "Compartilhar PDF"}
-      </button>
-      <button
-        type="button"
-        className="outline-button share-button"
-        disabled={busy !== null}
-        title="Baixar o PDF do pedido"
-        onClick={() => run("download", () => baixarPdfPedido(pedido))}
-      >
-        {busy === "download" ? "Gerando…" : "Baixar PDF"}
+        {busy ? "Preparando PDF…" : "Enviar PDF via WhatsApp"}
       </button>
     </div>
   );

@@ -440,18 +440,16 @@ table {
 .order-actions {
   display: grid;
   gap: 8px;
-  min-width: 250px;
+  min-width: 220px;
 }
 .order-share-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 5px;
+  display: block;
 }
 .share-button {
+  width: 100%;
   padding: 8px 10px;
   font-size: 12px;
-  white-space: nowrap;
+  line-height: 1.25;
 }
 .share-whatsapp {
   color: #138a56;
