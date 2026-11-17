@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 
 import application.pedija.dto.ResponseStockMovement;
 import application.pedija.entities.Order;
@@ -17,10 +15,12 @@ import application.pedija.exceptions.BusinessException;
 import application.pedija.exceptions.ResourceNotFoundException;
 import application.pedija.mappers.StockMovementMapper;
 import application.pedija.repositories.StockMovementRepository;
-import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class StockMovementService {
+  private static final LocalDateTime MIN_DATE = LocalDateTime.of(1, 1, 1, 0, 0);
+  private static final LocalDateTime MAX_DATE = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_999_999);
+
   private final StockMovementRepository stockMovementRepository;
   private final StockMovementMapper stockMovementMapper;
 
@@ -39,15 +39,9 @@ public class StockMovementService {
   @Transactional(readOnly = true)
   public List<ResponseStockMovement> findAll(Long produtoId, StockMovementType tipo, LocalDateTime inicio, LocalDateTime fim) {
     if (inicio != null && fim != null && inicio.isAfter(fim)) throw new BusinessException("Período inválido");
-    Specification<StockMovement> specification = (root, query, builder) -> {
-      java.util.List<Predicate> predicates = new java.util.ArrayList<>();
-      if (produtoId != null) predicates.add(builder.equal(root.get("produto").get("id"), produtoId));
-      if (tipo != null) predicates.add(builder.equal(root.get("tipo"), tipo));
-      if (inicio != null) predicates.add(builder.greaterThanOrEqualTo(root.get("dataMovimentacao"), inicio));
-      if (fim != null) predicates.add(builder.lessThanOrEqualTo(root.get("dataMovimentacao"), fim));
-      return builder.and(predicates.toArray(Predicate[]::new));
-    };
-    return stockMovementRepository.findAll(specification, Sort.by(Sort.Direction.DESC, "dataMovimentacao", "id"))
+    LocalDateTime from = inicio != null ? inicio : MIN_DATE;
+    LocalDateTime to = fim != null ? fim : MAX_DATE;
+    return stockMovementRepository.search(produtoId, tipo, from, to)
         .stream().map(stockMovementMapper::toResponse).toList();
   }
 
